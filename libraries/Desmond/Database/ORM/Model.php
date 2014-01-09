@@ -5,7 +5,8 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		protected $table = '';
 		protected $key = 'id';
 		protected $datastore = 'default'; 
-		protected $attributes = array(); 
+		protected $attributes = array();
+		protected $relationships = array();
 
 
 		public function __construct() {
@@ -21,6 +22,15 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 				$this->attributes[$col] = '';
 			}
 
+		}
+
+		/* get relationship within ORM */
+		public function Relation($name) {
+			/* find correct relation - this currently only applies to 1-* and *-1 relationships */
+			$model_name = $this->relationships[$name]['model'];
+			$model_obj = $model_name::where(array($this->relationships[$name]['key'] ,'=', $this->id));
+
+			return $model_obj;
 		}
 
 		public static function All() {

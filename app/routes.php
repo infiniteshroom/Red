@@ -12,6 +12,6 @@ Router::Route('/product/view')->host('')->parameter('id', int)
 	Router::Map('home', 'HomeController');
 
 	Router::Map('/db', function() {
-		var_dump(Database::table('Images')->results());
+		var_dump(Images::find(1216)->Relation('Comments')->results('json'));
 	})
 ?>
