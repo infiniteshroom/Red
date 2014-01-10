@@ -24,6 +24,18 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 		}
 
+		public static function Fill($data) {
+
+			$model_name = get_called_class();
+			$model = new $model_name();
+			
+			foreach($data as $key => $value) {
+				$model->$key = $value;
+			}
+
+			return $model;
+		}
+
 		/* get relationship within ORM */
 		public function Relation($name) {
 			/* find correct relation - this currently only applies to 1-* and *-1 relationships */
@@ -98,8 +110,53 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		public static function  __callStatic($method, $args) {
 			$model = get_called_class();
 			$obj = new $model();
-			return call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+			call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+			return $obj;
 		}
+
+		public function __call($method, $args)
+    	{
+    		if(count($args) != 0 && $method == 'results') {
+
+    			if($args[0] == 'json') {
+    				return call_user_func_array(array($this->GetBuilder(), $method), $args);
+    			}
+
+    			else if($args[0] == 'one') {
+    				$result = call_user_func_array(array($this->GetBuilder(), $method), $args);
+
+    				$model_name = get_called_class();
+
+    				return $model_name::Fill($result);
+    			}
+
+    		}
+
+    		else if(count($args) == 0 && $method == 'results') {
+			   $results = call_user_func_array(array($this->GetBuilder(), $method), $args);
+
+				$results_obj = array();
+
+				foreach($results as $result) { 
+ 					$model_name = get_called_class();
+
+ 					$model_obj = $model_name::Find($result->id);
+
+					$results_obj[] = $model_obj;
+				}   				
+
+				return $results_obj;
+			}
+
+    		else {
+    			call_user_func_array(array($this->GetBuilder(), $method), $args);
+
+				return $this;
+			}
+    	}
+
 
 
 
