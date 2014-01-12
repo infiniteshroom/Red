@@ -58,7 +58,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			$obj = new $model();
 			$results = $obj->GetBuilder()->where(array($obj->key, '=', $value))->results();
 
-			$dbobj = $results[0];
+			if(isset($results[0])) {
+				$dbobj = $results[0];
+			}
+
+			else {
+				return new $model();
+			}
 			
 			/* assign object to the new model */
 			$modelfind = new $model();

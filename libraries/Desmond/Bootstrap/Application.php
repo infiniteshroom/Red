@@ -85,6 +85,16 @@ class DesmondApplication {
 			Application::Import('Desmond::Database::ORM::*');
 			Application::Import('Models');
 
+			/* include base element for templates */
+			Application::Import('Desmond::Element::Element.php');
+
+			/* include all elements */
+			$elements = glob(Application::path('elements') . '*' , GLOB_ONLYDIR);
+
+			foreach($elements as $element) {
+				include($element . '/logic.php');
+			}
+
 			/* setup session manager */
 
 			if(Application::Setting('session::type') == 'memory') {
