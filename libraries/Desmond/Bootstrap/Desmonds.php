@@ -2,10 +2,12 @@
 	/* this class contains all desmond objects used within the application, these acts as proxy objects to 
 	various elements of the framework - allowing anyone to override them at any point within the application */
 	
+	class Mail extends DesmondObject {
+		protected static $instance;
+	}
 	class Auth extends DesmondObject {
 		protected static $instance;
 	}
-
 	class Password extends DesmondObject {
 		protected static $instance;
 	}

@@ -1,7 +1,4 @@
 <?php
-
-namespace Hautelook\Phpass;
-
 /**
  *
  * Portable PHP password hashing framework.

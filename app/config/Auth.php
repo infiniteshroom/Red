@@ -17,8 +17,8 @@
 			'password' => 'password',
 		),
 
-		/* hash type - if unsure leave as "blowfish" */
-		'hash' => 'MD5'
+		/* hash type - if unsure leave as "Blowfish" */
+		'hash' => 'Blowfish'
 
 
 	);

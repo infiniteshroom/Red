@@ -23,7 +23,7 @@ class DesmondApplication {
 		$this->settings['auth'] = include($this->path['config'] . 'Auth.php');
 		$this->settings['session'] = include($this->path['config'] . 'Session.php');
 		$this->settings['datastores'] = include($this->path['config'] . 'Datastores.php');
-
+		$this->settings['mail'] = include($this->path['config'] . 'Mail.php');
 
 		/* if mode is cli we need to do some different things */
 		if($this->mode == 'cli') {
@@ -86,6 +86,7 @@ class DesmondApplication {
 			Application::Import('Desmond::Database::ORM::*');
 			Application::Import('Desmond::Auth::Password::Password.php');
 			Application::Import('Desmond::Auth::Auth::Auth.php');
+			Application::Import('Desmond::Mail::Mail.php');
 			Application::Import('Models');
 
 			/* include base element for templates */
@@ -133,6 +134,9 @@ class DesmondApplication {
 			/* setup password and auth system */
 			Password::override(new DesmondPassword());
 			Auth::override(new DesmondAuth());
+
+			/* mail desmond */
+			Mail::override(new DesmondMail());
 
 
 			/* include routes */

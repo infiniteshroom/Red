@@ -6,11 +6,11 @@
 			'username' => 'root',
 			'password' => 'poke96',
 			'database' => 'test',
-		),
-
+		)
+		/*
 		'sqlite' => array(
 			'driver' => 'SQLite',
 			'path' => './sqlite.db',
-		),
+		),*/
 	)
 ?>

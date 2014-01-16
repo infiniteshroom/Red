@@ -12,6 +12,6 @@ Router::Route('/product/view')->host('')->parameter('id', int)
 	Router::Map('home', 'HomeController');
 
 	Router::Map('/db', function() {
-		Kint::dump(Images::find(1216)->Relation('Comments')->results());
-	})
+		Kint::dump(Auth::Check('Test', 'password'));
+	});
 ?>
