@@ -1,6 +1,7 @@
 <?php
 	Application::Import('Desmond::Database::DBAL::Drivers::IDatabaseConnection.php');
 	Application::Import('Desmond::Database::DBAL::Drivers::MySQL::*');
+	Application::Import('Desmond::Database::DBAL::Drivers::SQLite::*');
 
 	class DesmondDatabaseConnection implements IDatabaseConnection {
 		private $driver = null;

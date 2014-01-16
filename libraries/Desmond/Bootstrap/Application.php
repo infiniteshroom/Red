@@ -20,6 +20,7 @@ class DesmondApplication {
 
 		/* get app settings */
 		$this->settings['app'] = include($this->path['config'] . 'App.php');
+		$this->settings['auth'] = include($this->path['config'] . 'Auth.php');
 		$this->settings['session'] = include($this->path['config'] . 'Session.php');
 		$this->settings['datastores'] = include($this->path['config'] . 'Datastores.php');
 
@@ -83,6 +84,8 @@ class DesmondApplication {
 			Application::Import('Desmond::Database::DBAL::Query::*');
 			Application::Import('Desmond::Database::DBAL::Drivers::MySQL::*');
 			Application::Import('Desmond::Database::ORM::*');
+			Application::Import('Desmond::Auth::Password::Password.php');
+			Application::Import('Desmond::Auth::Auth::Auth.php');
 			Application::Import('Models');
 
 			/* include base element for templates */
@@ -108,7 +111,6 @@ class DesmondApplication {
 				Session::override(new FallbackSession());
 			}
 
-
 			Template::override(new TwigTemplate());
 			Database::override(new DesmondDatabase());
 
@@ -127,6 +129,10 @@ class DesmondApplication {
 			HTTPResponse::override(new DesmondResponse());
 
 			Router::override(new DesmondRouter());
+
+			/* setup password and auth system */
+			Password::override(new DesmondPassword());
+			Auth::override(new DesmondAuth());
 
 
 			/* include routes */

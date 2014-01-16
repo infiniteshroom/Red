@@ -53,12 +53,7 @@ class __TwigTemplate_ba811dcc1dea1ac947f23d9f7732c53df8cb20d099ca94e1d65cca786d3
   </head>
 
 <body style='background-color:#161616;overflow:hidden'>
-    ";
-        // line 38
-        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["lang"]) ? $context["lang"] : null), "Get", array(0 => "site_name"), "method"), "html", null, true);
-        echo "
 \t    <p><img src='/assets/default/images/redlogo.png' alt='logo'/></p>
-
 </body>
 
 </html>";
@@ -69,13 +64,8 @@ class __TwigTemplate_ba811dcc1dea1ac947f23d9f7732c53df8cb20d099ca94e1d65cca786d3
         return "home/index.html";
     }
 
-    public function isTraitable()
-    {
-        return false;
-    }
-
     public function getDebugInfo()
     {
-        return array (  58 => 38,  19 => 1,);
+        return array (  19 => 1,);
     }
 }

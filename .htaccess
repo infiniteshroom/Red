@@ -7,3 +7,9 @@ RewriteCond %{REQUEST_FILENAME} !-s
 
 # pass the rest of the request into index.php to handle     
 RewriteRule ^(.*)$ /index.php/$1 [L]
+
+<Files .DS_Store>
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</Files>

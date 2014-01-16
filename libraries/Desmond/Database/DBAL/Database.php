@@ -27,6 +27,8 @@
 
 		public function SetActive($datastore) {
 			$this->active = $datastore;
+
+			return $this;
 		}
 
 		public function GetActiveConnection() {
