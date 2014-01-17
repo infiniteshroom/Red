@@ -24,6 +24,10 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 		}
 
+		public function GetAttributeNames() {
+			return array_keys($this->attributes);
+		}
+
 		public static function Fill($data) {
 
 			$model_name = get_called_class();
@@ -145,10 +149,16 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 				$results_obj = array();
 
+				/* we need to avoid the n+1 problem - so don't find the model, instead assign the variables we have */
 				foreach($results as $result) { 
  					$model_name = get_called_class();
 
- 					$model_obj = $model_name::Find($result->id);
+ 					$model_obj = new $model_name();
+
+ 					foreach(get_object_vars($result) as $key => $value) {
+
+						$model_obj->$key = $value;
+					}
 
 					$results_obj[] = $model_obj;
 				}   				

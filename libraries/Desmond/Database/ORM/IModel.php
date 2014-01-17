@@ -7,6 +7,7 @@
 			public static function Find($value);
 			public function GetBuilder();
 			public function GetJson();	
+			public function GetAttributeNames();
 	}
 
 ?>

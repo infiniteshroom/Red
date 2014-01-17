@@ -1,5 +1,4 @@
 <?php
-
 class DesmondApplication {
 
 	private $settings = array();
