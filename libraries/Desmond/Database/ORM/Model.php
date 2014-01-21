@@ -42,9 +42,18 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 		/* get relationship within ORM */
 		public function Relation($name) {
-			/* find correct relation - this currently only applies to 1-* and *-1 relationships */
+			/* find correct relation - this currently only applies to 1-* and *-1 relationships - now allows belongs */
 			$model_name = $this->relationships[$name]['model'];
-			$model_obj = $model_name::where(array($this->relationships[$name]['key'] ,'=', $this->id));
+
+			$relation_key = $this->id;
+
+			if(isset($this->relationships[$name]['relation_key'])) {
+				$attribute = $this->relationships[$name]['relation_key'];
+
+				$relation_key = $this->$attribute;
+			}
+
+			$model_obj = $model_name::where(array($this->relationships[$name]['key'] ,'=', $relation_key));
 
 			return $model_obj;
 		}
