@@ -180,9 +180,15 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			}
 
     		else {
-    			call_user_func_array(array($obj->GetBuilder(), $method), $args);
+    			$result = call_user_func_array(array($obj->GetBuilder(), $method), $args);
 
-				return $obj;
+    			if($result == null) {
+					return $obj;
+				}
+
+				else {
+					return $result;
+				}
 			}
 		}
 
@@ -227,9 +233,15 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			}
 
     		else {
-    			call_user_func_array(array($this->GetBuilder(), $method), $args);
+    			$result = call_user_func_array(array($this->GetBuilder(), $method), $args);
 
-				return $this;
+    			if($result == null) {
+					return $this;
+				}
+
+				else {
+					return $result;
+				}
 			}
     	}
 
