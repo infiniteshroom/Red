@@ -24,7 +24,7 @@ Application::import('Desmond::Controller::IController.php');
 
 		/* allows you to set variables for the controller */
 		public function Set($data = array()) {
-			$this->variables + $data;
+			$this->variables = $this->variables + $data;
 		}
 
 		/* returns content to the screen */

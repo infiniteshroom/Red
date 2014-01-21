@@ -26,6 +26,7 @@ class TwigTemplate implements ITemplate {
 			    'debug' => true,
 			));
 
+			$twig->addGlobal('app', Application::instance());
 			$twig->addGlobal('lang', Language::instance());
 			$twig->addGlobal('request', HTTPRequest::instance());
 			$twig->addGlobal('response', HTTPResponse::instance());
@@ -71,7 +72,8 @@ class TwigTemplate implements ITemplate {
 			    'cache' => Application::Path('temp'). 'cache/templates',
 			    'debug' => true,
 			));
-
+			
+			$twig->addGlobal('app', Application::instance());
 			$twig->addGlobal('lang', Language::instance());
 			$twig->addGlobal('request', HTTPRequest::instance());
 			$twig->addGlobal('response', HTTPResponse::instance());

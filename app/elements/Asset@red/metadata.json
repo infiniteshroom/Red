@@ -1,0 +1,7 @@
+{
+ "uuid": "Asset@red",
+ "name": "Asset",
+ "author": "Mark J. Lang",
+ "version": "0.1",
+ "description": "A Control for including html/js assets in a template"
+}
