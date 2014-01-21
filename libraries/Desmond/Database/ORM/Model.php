@@ -58,6 +58,7 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			return $model_obj;
 		}
 
+
 		public static function All() {
 			$model = get_called_class();
 			$obj = new $model();
@@ -120,6 +121,16 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 	    {
 	        $this->attributes[$key] = $value;
 	    }
+	    
+        public function __isset($name)
+	    {
+	       	if(isset($name)) {
+	            return true;
+	        }
+
+	        return false;
+	    }
+
 
 	    public function GetJson() {
 	    	return json_encode($this->attributes);
@@ -130,9 +141,49 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			$model = get_called_class();
 			$obj = new $model();
 
-			call_user_func_array(array($obj->GetBuilder(), $method), $args);
+  			if(count($args) != 0 && $method == 'results') {
 
-			return $obj;
+    			if($args[0] == 'json') {
+    				return call_user_func_array(array($obj->GetBuilder(), $method), $args);
+    			}
+
+    			else if($args[0] == 'one') {
+    				$result = call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+    				$model_name = get_called_class();
+
+    				return $model_name::Fill($result);
+    			}
+
+    		}
+
+    		else if(count($args) == 0 && $method == 'results') {
+			   $results = call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+				$results_obj = array();
+
+				/* we need to avoid the n+1 problem - so don't find the model, instead assign the variables we have */
+				foreach($results as $result) { 
+ 					$model_name = get_called_class();
+
+ 					$model_obj = new $model_name();
+
+ 					foreach(get_object_vars($result) as $key => $value) {
+
+						$model_obj->$key = $value;
+					}
+
+					$results_obj[] = $model_obj;
+				}   				
+
+				return $results_obj;
+			}
+
+    		else {
+    			call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+				return $obj;
+			}
 		}
 
 		public function __call($method, $args)
