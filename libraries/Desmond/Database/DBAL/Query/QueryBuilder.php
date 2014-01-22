@@ -20,6 +20,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'empty' => 'TRUNCATE {table}',
 			'insert' => 'INSERT INTO {table} ({cols}) VALUES ({values})',
 			'update' => 'UPDATE {table} SET {values}',
+			'orderby' => 'ORDER BY {col} {order}',
+			'orderbymore' => ', {col} {order}',
 		);
 
 		public $where_operators = array(
@@ -107,7 +109,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 
 		}
-		
+
 		public function orderby($col, $order) {
 
 			if($this->orderstring == '') {
