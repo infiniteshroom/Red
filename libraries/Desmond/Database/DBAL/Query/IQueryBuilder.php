@@ -16,11 +16,11 @@
 		public function delete();
 		public function truncate();
 		public function insert($data = array());
+		public function orderby($col, $order);
 
 		/* stub */
 		/*
 		public function limit($amount, $offset=0);
-		public function orderby($col, $order);
 		public function join();
 		public function cache($seconds);*/
 

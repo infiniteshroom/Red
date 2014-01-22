@@ -107,6 +107,23 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 
 		}
+		
+		public function orderby($col, $order) {
+
+			if($this->orderstring == '') {
+				$this->orderstring = $this->ProcessString('orderby', array(
+				'col' => $col,
+				'order' => $order,
+				));
+			}
+
+			else {
+				$this->orderstring .= $this->ProcessString('orderbymore', array(
+				'col' => $col,
+				'order' => $order,
+				));
+			}
+		}
 
 		public function limit($amount, $offset=0) {
 
