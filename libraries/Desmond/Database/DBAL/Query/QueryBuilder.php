@@ -11,6 +11,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		private $sql = "";
 		private $conn = null;
 		private $table = "";
+		private $orderstring = "";
 
 		public $strings = array(
 			'select' => 'SELECT {columns} FROM {table}',
@@ -30,6 +31,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'less' => '<',
 			'lessequal' => '<=',
 			'greaterequal' => '>=',
+			'notequal' => '!=',
 			'like' => 'LIKE',
 		);
 
@@ -125,6 +127,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				'order' => $order,
 				));
 			}
+
+			return $this;
 		}
 
 		public function limit($amount, $offset=0) {
@@ -141,8 +145,12 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			}
 
 			
+
 			$statement = new DesmondDatabaseQuery($this->conn);
 
+			/* add on order statements if exists */
+
+			$this->sql .= ' ' . $this->orderstring;
 			$statement->Execute($this->sql);
 
 
@@ -174,7 +182,13 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 			$statement->Execute($this->sql);
 
-			return $statement->Count();
+			$count = $statement->Count();
+
+			if($count == null) {
+				$count = 0;
+			}
+
+			return $count;
 		}
 		public function delete() {
 			if($this->table == '') {

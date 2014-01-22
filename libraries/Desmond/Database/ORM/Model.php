@@ -182,7 +182,11 @@ Application::Import('Desmond::Database::ORM::IModel.php');
     		else {
     			$result = call_user_func_array(array($obj->GetBuilder(), $method), $args);
 
-    			if($result == null) {
+    			if(is_null($result)) {
+					return $obj;
+				}
+
+				else if($result instanceof QueryBuilder) {
 					return $obj;
 				}
 
@@ -235,7 +239,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
     		else {
     			$result = call_user_func_array(array($this->GetBuilder(), $method), $args);
 
-    			if($result == null) {
+    			if(is_null($result)) {
+					return $this;
+				}
+
+
+
+				else if($result instanceof QueryBuilder) {
 					return $this;
 				}
 
