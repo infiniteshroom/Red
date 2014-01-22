@@ -14,6 +14,12 @@ class DesmondApplication {
  		/* get core paths */
  		$this->path = include('paths.php');
 
+ 		/* generate web path */
+ 		$docpath = $_SERVER['DOCUMENT_ROOT'];
+		$sitepath = (dirname($_SERVER['SCRIPT_NAME']) == '/' || dirname($_SERVER['SCRIPT_NAME']) == '\\') ? '' : dirname($_SERVER['SCRIPT_NAME']);
+		$this->path['web'] = $sitepath;
+		
+
  		/* get app paths */
 		$this->path = array_merge($this->path, include($this->path['app'] . '/paths.php'));
 
