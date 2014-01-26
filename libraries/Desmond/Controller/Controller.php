@@ -55,6 +55,10 @@ Application::import('Desmond::Controller::IController.php');
 					Template::Render(strtolower($this->request->Controller()) . '::' . 
 						$this->request->Action() . '.html',$this->variables);
 				}
+
+				else {
+					Template::Render(strtolower($this->viewname) . '.html',$this->variables);
+				}
 			}
 
 			else {
@@ -91,7 +95,14 @@ Application::import('Desmond::Controller::IController.php');
 					/* check if 'any' method */
 					$action = 'any_'.$this->request->Action();
 					if(!method_exists($this, $action)) {
-						$action = 'any_index';
+
+						if(method_exists($this, 'missing')) {
+							$action = 'missing';
+						}
+
+						else {
+							$action = 'any_index';
+						}
 					}
 				}
 			}
