@@ -41,6 +41,7 @@ Application::import('Desmond::Controller::IController.php');
 			/* render twig template if we want one */
 
 			if($this->response->GetContent() == "") {
+
 				/* so no content set yet must be a view render */
 				
 				/* templates work by using either automatically rendering the view or using your override */
@@ -154,28 +155,32 @@ Application::import('Desmond::Controller::IController.php');
 		}
 
 	/* determine content type and store in response object */
-	if(is_array($result)) {
-		$this->Set($result);
-	}
 
-	else if($result instanceof IModel) {
-		$this->response->SetContentType('application/json');
-		$this->response->SetContent($result->GetJSON());
-	}
 
-	else if(is_object($result)) {
-		$this->response->SetContentType('application/json');
-		$this->response->SetContent(json_encode($result));
-	}
+	if($this->response->GetContent() == '') {
+		if(is_array($result)) {
+			$this->Set($result);
+		}
 
-	else if(json_decode($result) != null) {
+		else if($result instanceof IModel) {
 			$this->response->SetContentType('application/json');
-			$this->response->SetContent($result);
-	}
+			$this->response->SetContent($result->GetJSON());
+		}
 
-	else {
-		$this->response->SetContentType('text/html');
-		$this->response->SetContent($result);
+		else if(is_object($result)) {
+			$this->response->SetContentType('application/json');
+			$this->response->SetContent(json_encode($result));
+		}
+
+		else if(json_decode($result) != null) {
+				$this->response->SetContentType('application/json');
+				$this->response->SetContent($result);
+		}
+
+		else {
+			$this->response->SetContentType('text/html');
+			$this->response->SetContent($result);
+		}
 	}
  }	
 
