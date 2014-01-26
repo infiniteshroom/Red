@@ -53,7 +53,10 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
   </head>
 
 <body style='background-color:#161616;overflow:hidden'>
-\t    <p><img src='/assets/default/images/redlogo.png' alt='logo'/></p>
+\t    <p><img src='";
+        // line 38
+        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["app"]) ? $context["app"] : null), "Path", array(0 => "web"), "method"), "html", null, true);
+        echo "/assets/default/images/redlogo.png' alt='logo'/></p>
 </body>
 
 </html>";
@@ -64,8 +67,13 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
         return "home/index.html";
     }
 
+    public function isTraitable()
+    {
+        return false;
+    }
+
     public function getDebugInfo()
     {
-        return array (  19 => 1,);
+        return array (  58 => 38,  19 => 1,);
     }
 }

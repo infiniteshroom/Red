@@ -26,5 +26,18 @@ Application::Import('Desmond::HTTP::Response::IResponse.php');
 		public function GetContent() {
 			return $this->content;
 		}
+
+		public function Redirect($location) {
+			/* controller::action or pure location */
+
+			/* we set content here, to avoid view being rendered. */
+			$this->SetContent = "redirect";
+
+			if(strstr($location, '::') === false) {
+				$this->SetHeader('Location', Application::Path('web') . $location);
+			}
+
+			
+		}
 	}
 ?>

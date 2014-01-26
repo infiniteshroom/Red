@@ -31,6 +31,7 @@ class TwigTemplate implements ITemplate {
 			$twig->addGlobal('request', HTTPRequest::instance());
 			$twig->addGlobal('response', HTTPResponse::instance());
 			$twig->addGlobal('session', Session::instance());
+			$twig->addGlobal('auth', Auth::instance());
 
 			/* include all elements */
 			$elements = glob(Application::path('elements') . '*' , GLOB_ONLYDIR);
@@ -78,6 +79,7 @@ class TwigTemplate implements ITemplate {
 			$twig->addGlobal('request', HTTPRequest::instance());
 			$twig->addGlobal('response', HTTPResponse::instance());
 			$twig->addGlobal('session', Session::instance());
+			$twig->addGlobal('auth', Auth::instance());
 
 			/* include all elements */
 			$elements = glob(Application::path('elements') . '*' , GLOB_ONLYDIR);

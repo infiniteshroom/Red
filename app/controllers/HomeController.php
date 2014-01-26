@@ -1,7 +1,11 @@
 <?php
 	class HomeController extends Controller {
 		public function any_index() {
-			$this->Set(compact('hello', 'hello world'));
+			//return $this->response->Redirect('/home/test/');
+		}
+
+		public function any_test() {
+			return "Hello World";
 		}
 	}
 ?>

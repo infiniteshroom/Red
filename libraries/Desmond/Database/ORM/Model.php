@@ -152,7 +152,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
     				$model_name = get_called_class();
 
-    				return $model_name::Fill($result);
+    				if($result != null) {
+    					return $model_name::Fill($result);
+    				}
+
+    				else {
+    					return null;
+    				}
     			}
 
     		}
@@ -209,7 +215,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
     				$model_name = get_called_class();
 
-    				return $model_name::Fill($result);
+    				if($result != null) {
+    					return $model_name::Fill($result);
+    				}
+
+    				else {
+    					return null;
+    				}
     			}
 
     		}

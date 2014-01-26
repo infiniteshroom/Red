@@ -1,6 +1,4 @@
 <?php
-use InvalidArgumentException;
-
 /**
 * Validation Class
 *
@@ -38,20 +36,8 @@ class Validator
                 $this->_fields[$field] = $value;
             }
         }
-
-        // set lang in the follow order: constructor param, static::$_lang, default to en
-        $lang = $lang ?: static::lang();
-        // set langDir in the follow order: constructor param, static::$_langDir, default to package lang dir
-        $langDir = $langDir ?: static::langDir();
-
-        // Load language file in directory
-        $langFile = rtrim($langDir, '/') . '/' . $lang . '.php';
-        if ( stream_resolve_include_path($langFile) ) {
-            $langMessages = include $langFile;
+            $langMessages = include(Application::Path('language') . Application::Setting('app::Language') . '/validator/messages.php');
             static::$_ruleMessages = array_merge(static::$_ruleMessages, $langMessages);
-        } else {
-            throw new InvalidArgumentException("fail to load language file '$langFile'");
-        }
     }
 
     /**

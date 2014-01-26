@@ -34,6 +34,8 @@ Application::Import('Desmond::Auth::Auth::IAuth.php');
 				$result = Database::SetActive($datasource)->table($table)->where(array($attributes['username'], '=', $username))->results('one');
 
 				Session::Set('user_id',$result['id']);
+
+				return true;
 			}		
 
 			else {
@@ -58,8 +60,18 @@ Application::Import('Desmond::Auth::Auth::IAuth.php');
 			$table = Application::Setting('auth::table');
 
 			$attributes = Application::Setting('auth::attributes');
+				
 
-			$result = Database::SetActive($datasource)->table($table)->where(array($attributes['username'], '=', $username))->results('one');
+			$result_count = Database::SetActive($datasource)->table($table)->where(array($attributes['username'], '=', $username))->count();
+
+			if($result_count > 0) {
+				$result = Database::SetActive($datasource)->table($table)->where(array($attributes['username'], '=', $username))->results('one');
+			}
+
+			else {
+				return false;
+			}
+
 			if(Password::Check($result[$attributes['password']], $password)) {
 				return true;
 			}

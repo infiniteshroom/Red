@@ -7,5 +7,6 @@
 		public function SetCookie($name, $value, $expiry);
 		public function GetHeaders();
 		public function GetContent();
+		public function Redirect($location);
 	}
 ?>

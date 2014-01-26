@@ -29,6 +29,8 @@ Application::Import('Desmond::Auth::Auth::IAuth.php');
 				$model_obj = $model::where(array($attributes['username'], '=', $username))->results('one');
 
 				Session::Set('user_id',$model_obj->id);
+
+				return true;
 			}		
 
 			else {
@@ -54,7 +56,15 @@ Application::Import('Desmond::Auth::Auth::IAuth.php');
 
 			$password_attribute = $attributes['password'];
 
-			$model_obj = $model::where(array($attributes['username'], '=', $username))->results('one');
+			$model_obj_count = $model::where(array($attributes['username'], '=', $username))->count();
+
+			if($model_obj_count > 0) {
+				$model_obj = $model::where(array($attributes['username'], '=', $username))->results('one');
+			}
+
+			else {
+				return false;
+			}
 
 			if(Password::Check($model_obj->$password_attribute, $password)) {
 				return true;
