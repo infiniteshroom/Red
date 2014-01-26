@@ -235,7 +235,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'cols' => implode(',', $cols),
 			'values' => implode(',', $values), 
 			));
-
+			
 			$statement = new DesmondDatabaseQuery($this->conn);
 			$statement->Execute($sql);
 
@@ -295,6 +295,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		}
 
 		private function ProcessParamaterType($parameter) {
+
 			if(is_int($parameter)) {
 				return (int) $parameter;
 			}
@@ -304,8 +305,12 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 					return (bool) $parameter;
 				}
 			}
-			else if(is_string($parameter)) {
+			else if(is_string($parameter) && $parameter != '') {
 				return "'" . $parameter . "'";
+			}
+
+			else {
+				return "null";
 			}
 		}
 
