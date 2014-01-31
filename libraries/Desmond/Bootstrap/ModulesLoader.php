@@ -16,17 +16,22 @@ class DesmondModulesLoader {
 		$collection = str_replace('::', '/', $collection);
 		
 		$collection_path_parts = explode('/', $collection);
+
 		
 		//Are we including a widget
 		if($collection_path_parts[0] == 'Widget') {
 			$collection_path = Application::Path('controllers') . '/widgets/'. $collection_path_parts[1] . '/';
 		}
+
+		else if($collection_path_parts[0] == 'Plugin') {
+			$collection_path = Application::Path('plugins') . $collection_path_parts[1] . '/libraries/' . $collection_path_parts[2] . '/';
+		}
 		
 		else {
-		$collection_path = Application::Path('libraries');
+			$collection_path = Application::Path('libraries');
 	    }
 	     
-	     
+
 		   if(is_dir($collection_path)) {
 			   foreach (glob($collection_path . '*.php') as $filename) 
 			   {
@@ -58,7 +63,10 @@ class DesmondModulesLoader {
 		$file_parts = explode('/', $file);
 
 		if($file_parts[0] == 'Controller') {
+
 			$file = str_replace('Controller/', '', $file);
+
+
 			
 			if(file_exists(Application::path('controllers') . $file)) {
 				
@@ -66,7 +74,10 @@ class DesmondModulesLoader {
 				include_once(Application::path('controllers') . '/' . $file);
 			}
 			
-			else {
+			else if(!class_exists(str_replace('.php', '', basename($file)))) {
+
+				var_dump(class_exists('TestController'));
+				exit;
 				throw new DesmondModuleMissingException("Module Import failed - " . $fileraw);
 			}
 		}
@@ -91,7 +102,9 @@ class DesmondModulesLoader {
 
 	
 
-		if($recursive == false) {   
+		if($recursive == false) {
+	
+
 		$dir = Application::path('libraries'). $namespace . '/';
 		}
 		

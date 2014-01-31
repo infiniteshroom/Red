@@ -83,6 +83,7 @@ class DesmondApplication {
 			$run->register();
 
 			/* include template engine and set twig as current engine */
+			Application::Import('Desmond::Controller::*');
 			Application::Import('Desmond::Template::*');
 			Application::Import('Desmond::Database::DBAL::*');
 			Application::Import('Desmond::Database::DBAL::Database.php');
@@ -104,6 +105,18 @@ class DesmondApplication {
 				include($element . '/logic.php');
 			}
 
+			
+			/* start the router and load routing rules for the app */
+			Application::Import('Desmond::HTTP::Router::*');
+			Application::Import('Desmond::HTTP::Request::*');
+			Application::Import('Desmond::HTTP::Response::*');
+
+			/* setup the default request and response objects */
+			HTTPRequest::override(new DesmondRequest());
+			HTTPResponse::override(new DesmondResponse());
+
+
+
 			/* setup session manager */
 
 			if(Application::Setting('session::type') == 'memory') {
@@ -120,19 +133,10 @@ class DesmondApplication {
 			Template::override(new TwigTemplate());
 			Database::override(new DesmondDatabase());
 
-			/* start the router and load routing rules for the app */
-			Application::Import('Desmond::HTTP::Router::*');
-			Application::Import('Desmond::HTTP::Request::*');
-			Application::Import('Desmond::HTTP::Response::*');
-
 			/* setup language manager */
 			Application::Import('Desmond::Language::Loader::*');
 
 			Language::override(new DesmondLanguage());	
-
-			/* setup the default request and response objects */
-			HTTPRequest::override(new DesmondRequest());
-			HTTPResponse::override(new DesmondResponse());
 
 			Router::override(new DesmondRouter());
 
@@ -143,12 +147,113 @@ class DesmondApplication {
 			/* mail desmond */
 			Mail::override(new DesmondMail());
 
+			/* load plugins */
+			$this->loadPlugins();
+
 
 			/* include routes */
 			include($this->path['app'] . 'routes.php');
 
 			Router::Process();
 		}
+
+	}
+
+	private function loadPlugins() {
+		/* we load all plugins into the current scope */
+
+			/* include all elements */
+			$plugins = glob(Application::path('plugins') . '*' , GLOB_ONLYDIR);
+
+			foreach($plugins as $plugin) {
+				/* read metadata */
+
+				$meta = json_decode(file_get_contents($plugin . '/metadata.json'));
+
+				/* set view path to include plugin */
+				Template::addPath($plugin . '/views/');
+
+
+				/* include all config, controllers, language(?), models and set view path to include plugin */
+				include($plugin . '/desmonds.php');
+				
+				/* include all config files */
+
+				$configs = glob($plugin . '/config/*');
+
+				foreach($configs as $config) {
+
+						if(basename($config) != 'config') {
+
+							if(strstr($config, 'App.php')) {
+								$this->settings['app'] += include($config);
+							}
+
+							else if(strstr($config, 'Auth.php')) {
+								$this->settings['auth'] += include($config);
+							}
+
+							else if(strstr($config, 'Session.php')) {
+								$this->settings['session'] += include($config);
+							}
+
+							else if(strstr($config, 'Datastores.php')) {
+								$this->settings['datastores'] += include($config);
+							}					
+
+							else if(strstr($config, 'Mail.php')) {
+								$this->settings['mail'] += include($config);
+							}
+							else {
+
+								/* custom config file - decide on this later */
+								//$this->settings[];
+							}
+
+						include($config);
+					}
+				}
+
+
+
+
+				/* include all controllers */
+				$controllers = glob($plugin . '/controllers/*');
+
+				foreach($controllers as $controller) {
+					if(basename($controller) != 'controllers') {
+
+
+						include($controller);
+					}
+				}				
+
+				/* include all modals */
+				$models = glob($plugin . '/models/*');
+
+				foreach($models as $model) {
+
+					
+					if(basename($model) != 'models') {
+						include($model);
+					}
+				}
+
+				/* include routes */
+				include($plugin . '/routes.php');
+
+
+				/* start the plugin */
+				include($plugin . '/start.php');
+
+				/* create class */
+				$plugin_class_name = 'plugin_' . $meta->name;
+
+				$plugin_obj = new $plugin_class_name();
+				$plugin_obj->Start();
+
+
+			}
 
 	}
 

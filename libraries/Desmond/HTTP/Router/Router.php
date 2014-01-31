@@ -53,7 +53,6 @@ class DesmondRouter {
 				}
 
 				if($route['type'] == 'controller') {
-					Application::import('Desmond::Controller::Controller.php');
 					Application::import('Controller::' . $route['controller'] . '.php');
 
 					/* set controller var in request object */

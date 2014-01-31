@@ -84,7 +84,8 @@ class MemorySession implements ISession {
 			
 			$this->vars = $session;
 			setcookie("RED_SID", $this->session_id, time()+3600, "/");
-			header("location: {Application::Path('web')}/{$_SERVER['PATH_INFO']}");
+
+			HTTPResponse::Redirect('./');
 		}
 		else 
 		{
@@ -96,7 +97,8 @@ class MemorySession implements ISession {
 					$memory->CreateMemoryHandler('RED_SID');
 					$memory->WriteCacheData('RED_SID', array(), strtotime("+1 year"));
 					$this->Destroy();
-				    header("location: {Application::Path('web')}/{$_SERVER['PATH_INFO']}");
+				    	
+					HTTPResponse::Redirect('./');
 					 
 				}
 
@@ -116,7 +118,8 @@ class MemorySession implements ISession {
 					//Well you had to didn't you. You attempted to spoof, we destory. Though we should regen ID, but this will do for now.
 					$this->session_id = $_COOKIE["RED_SID"];
 					$this->Destroy();
-				    header("location: {Application::Path('web')}/{$_SERVER['PATH_INFO']}");
+
+					HTTPResponse::Redirect('./');
 				}
 		}
 	}

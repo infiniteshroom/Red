@@ -4,8 +4,8 @@
 			//return $this->response->Redirect('/home/test/');
 		}
 
-		public function any_test() {
-			return "Hello World";
+		public function any_test($id) {
+			return "Hello Worlddd";
 		}
 	}
 ?>

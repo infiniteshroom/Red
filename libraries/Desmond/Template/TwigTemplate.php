@@ -4,7 +4,15 @@ Application::Import('Twig::Autoloader.php');
 Twig_Autoloader::register();
 
 class TwigTemplate implements ITemplate {
+		private $paths = array();
+
+		public function addPath($path) {
+			$this->paths[] = $path;
+		}
+
 		public function Render($view, $vars=array(), $custompath=null) {
+
+
 
 			if($custompath == null) {
 				/* build up view path */
@@ -19,7 +27,22 @@ class TwigTemplate implements ITemplate {
 
 			$view = str_replace("::", "/", $view);
 
-			$loader = new Twig_Loader_Filesystem($path);
+			
+
+			if(file_exists($path . $view)) {
+				$loader = new Twig_Loader_Filesystem($path);
+			}
+
+			else {
+				/* lookup paths to find view */
+				foreach($this->paths as $path) {
+
+					if(file_exists($path . $view)) {
+						$loader = new Twig_Loader_Filesystem($path);
+					}					
+				}
+			}
+
 			$twig = new Twig_Environment($loader, array(
 			    'cache' => Application::Path('temp'). 'cache/templates',
 			    'auto_reload' => true,
@@ -49,8 +72,10 @@ class TwigTemplate implements ITemplate {
 			}
 
 			$twig->addExtension(new Twig_Extension_Debug());
-
+			
 			echo $twig->render($view, $vars);
+
+			
 
 		}
 
@@ -68,7 +93,20 @@ class TwigTemplate implements ITemplate {
 
 			$view = str_replace("::", "/", $view);
 
-			$loader = new Twig_Loader_Filesystem($path);
+
+			if(file_exists($path . $view)) {
+				$loader = new Twig_Loader_Filesystem($path);
+			}
+
+			else {
+				/* lookup paths to find view */
+				foreach($this->paths as $path) {
+					if(file_exists($path . $view)) {
+						$loader = new Twig_Loader_Filesystem($path);
+					}					
+				}
+			}
+
 			$twig = new Twig_Environment($loader, array(
 			    'cache' => Application::Path('temp'). 'cache/templates',
 			    'debug' => true,
@@ -95,11 +133,8 @@ class TwigTemplate implements ITemplate {
 				$twig->addGlobal($element_name, new $element_name());
 
 			}
+				return $twig->render($view, $vars);
 
-
-			$twig->addExtension(new Twig_Extension_Debug());
-
-			return $twig->render($view, $vars);
 		}
 	}
 ?>
