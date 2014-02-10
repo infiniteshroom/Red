@@ -17,9 +17,6 @@ Application::import('Desmond::Controller::IController.php');
 
 			$this->response = HTTPResponse::instance();
 
-			/* call correct action */
-			$this->ProcessActions();
-
 		}
 
 		/* allows you to set variables for the controller */
@@ -57,7 +54,7 @@ Application::import('Desmond::Controller::IController.php');
 				}
 
 				else {
-					Template::Render(strtolower($this->viewname) . '.html',$this->variables);
+						Template::Render(strtolower($this->viewname) . '.html',$this->variables);
 				}
 			}
 
@@ -77,7 +74,7 @@ Application::import('Desmond::Controller::IController.php');
 			$this->viewname = $name;
 		}
 
-	private function ProcessActions() {
+	public function ProcessActions() {
 			$action = null;
 			if($this->request->Action() != '') {
 
@@ -95,14 +92,7 @@ Application::import('Desmond::Controller::IController.php');
 					/* check if 'any' method */
 					$action = 'any_'.$this->request->Action();
 					if(!method_exists($this, $action)) {
-
-						if(method_exists($this, 'missing')) {
-							$action = 'missing';
-						}
-
-						else {
 							$action = 'any_index';
-						}
 					}
 				}
 			}
@@ -141,8 +131,12 @@ Application::import('Desmond::Controller::IController.php');
 		$path_args = array_values($path_args);
 
 		/* remove controller and action */
+
+		if($action != 'any_index') {
+			unset($path_args[1]);
+		}
+
 		unset($path_args[0]);
-		unset($path_args[1]);
 
 		$path_args = array_values($path_args);
 						
@@ -157,18 +151,28 @@ Application::import('Desmond::Controller::IController.php');
 				}
 			}
 
+			try {
+				$result = call_user_func_array(array( $this, $action ), $args);
+			}
 
-			$result = call_user_func_array(array( $this, $action ), $args);
+			catch( ErrorException $e) {
+				$result = call_user_func_array(array( $this, 'missing' ), $args); 
+			}
 		}
 		
 		else {
+
 			$result = $this->$action();
+
+
 		}
 
 	/* determine content type and store in response object */
+	$this->setActionContent($result);
+ }	
 
-
-	if($this->response->GetContent() == '') {
+ public function setActionContent($result) {
+ 	if($this->response->GetContent() == '') {
 		if(is_array($result)) {
 			$this->Set($result);
 		}
@@ -193,7 +197,7 @@ Application::import('Desmond::Controller::IController.php');
 			$this->response->SetContent($result);
 		}
 	}
- }	
+ }
 
 }
 

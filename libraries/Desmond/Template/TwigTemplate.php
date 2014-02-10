@@ -75,6 +75,8 @@ class TwigTemplate implements ITemplate {
 			
 			echo $twig->render($view, $vars);
 
+
+
 			
 
 		}
@@ -130,9 +132,13 @@ class TwigTemplate implements ITemplate {
 				$element_name = $element_parts[0]. 'Element';
 				
 
-				$twig->addGlobal($element_name, new $element_name());
+				$twig->addGlobal($element_parts[0], new $element_name());
 
 			}
+
+			$twig->addExtension(new Twig_Extension_Debug());
+
+
 				return $twig->render($view, $vars);
 
 		}

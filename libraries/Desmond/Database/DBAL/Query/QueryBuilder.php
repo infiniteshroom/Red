@@ -12,6 +12,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		private $conn = null;
 		private $table = "";
 		private $orderstring = "";
+		
+		public $metadata = array();
 
 		public $strings = array(
 			'select' => 'SELECT {columns} FROM {table}',
@@ -23,6 +25,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'update' => 'UPDATE {table} SET {values}',
 			'orderby' => 'ORDER BY {col} {order}',
 			'orderbymore' => ', {col} {order}',
+			'join' => 'INNER JOIN {table} ON {col1} {operator} {col2}',
+			'joinselect' => 'SELECT {filtertable}.* FROM {table}'
 		);
 
 		public $where_operators = array(
@@ -110,6 +114,30 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			return $this;
 
 
+		}
+
+		public function join($filter = array()) {
+			$join_table = $filter[0];
+			$table_col = $filter[1];
+			$filter_type = $filter[2];
+			$join_col = $filter[3];
+
+			$select_sql = $this->ProcessString('joinselect', array(
+				'table' => $this->table, 
+				'filtertable' => $join_table,
+			));
+
+			$join_sql = $this->ProcessString('join', array(
+				'table' => $join_table,
+				'col1' => $table_col,
+				'operator' => $filter_type,
+				'col2' => $join_col,
+			));
+
+			$this->sql = $select_sql . ' ' . $join_sql;
+			$this->metadata['join_table'] = $join_table;
+
+			return $this;
 		}
 
 		public function orderby($col, $order) {
@@ -275,7 +303,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		}
 
 		public function raw($sql) {
-			$this->sql .= $sql;
+			$this->sql = $sql;
 
 			return $this;
 		}

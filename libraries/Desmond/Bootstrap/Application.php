@@ -17,6 +17,12 @@ class DesmondApplication {
  		/* generate web path */
  		$docpath = $_SERVER['DOCUMENT_ROOT'];
 		$sitepath = (dirname($_SERVER['SCRIPT_NAME']) == '/' || dirname($_SERVER['SCRIPT_NAME']) == '\\') ? '' : dirname($_SERVER['SCRIPT_NAME']);
+
+		/* Fallback for missing PATH_INFO */
+		if(!isset($_SERVER['PATH_INFO'])) {
+		    $_SERVER['PATH_INFO'] = '/';		
+		}
+
 		$this->path['web'] = $sitepath;
 		
 

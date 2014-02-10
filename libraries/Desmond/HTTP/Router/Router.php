@@ -9,6 +9,7 @@ class DesmondRouter {
 
 
 	public $routes = array();
+	public $missing = array();
 
 	public function Process($request=null) {
 		/* no request given check pathinfo for the request */
@@ -28,7 +29,8 @@ class DesmondRouter {
 
 			}
 
-			if($route['route'] == $request || $route['route'] . '/' == $request || $route['route'] == '/' . $request) {
+			if($route['route'] == $request || $route['route'] . '/' == $request || $route['route'] == '/' . $request 
+				|| (0 === strpos($request, $route['route']) && $route['route'] != '/') ) {
 				if($route['type'] == 'function') {
 
 					if($route['method'] == 'all') {
@@ -53,15 +55,57 @@ class DesmondRouter {
 				}
 
 				if($route['type'] == 'controller') {
-					Application::import('Controller::' . $route['controller'] . '.php');
+
+			
+
+					$controller_parts = explode('::', $route['controller']);
+					Application::import('Controller::' . $controller_parts[0] . '.php');
 
 					/* set controller var in request object */
-					HTTPrequest::Controller(str_replace('Controller', '', $route['controller']));
-					$controller_class = $route['controller'];
+					HTTPrequest::Controller(str_replace('Controller', '', $controller_parts[0]));
+					$controller_class = $controller_parts[0];
 					$controller = new $controller_class();
+
+
 					$controller->Init();
+
+
+					if(isset($controller_parts[1])) {
+						$action = $controller_parts[1];
+
+						$result = $controller->$action();
+
+						$controller->setActionContent($result);
+
+						$controller->request->Action(explode('_', $controller_parts[1])[1]);
+					}
+
+					else {
+						$controller->ProcessActions();
+					}
+
 					$controller->render();
 				}
+			}
+		}
+
+		/* if we got here no route is configured for this page */
+
+		if(isset($this->missing['404'])) {
+			if($this->missing['404']['type'] == 'function') {
+				$function = $this->missing['404']['func'];
+				$function();
+			}
+
+			else {
+			Application::import('Controller::' . $this->missing['404']['controller'] . '.php');
+
+			/* set controller var in request object */
+			HTTPrequest::Controller(str_replace('Controller', '', $this->missing['404']['controller']));
+			$controller_class = $this->missing['404']['controller'];
+			$controller = new $controller_class();
+			$controller->Init();
+			$controller->render();
 			}
 		}
 	}
@@ -86,8 +130,22 @@ class DesmondRouter {
 		}
 	}
 
-	public function Missing() {
+	public function Missing($item, $method='all') {
+		if(is_callable($item)) {
+			$this->missing['404'] = array(
+			'type' => 'function',
+				'func' => $item,
+				'method' => $method,
+			);
+		}
 
+		else {
+			$this->missing['404'] = array(
+				'type' => 'controller',
+				'controller' => $item,
+				'method' => $method,
+			);
+		}
 	}
 }
 

@@ -13,20 +13,17 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 			/* bind query builder */
 			$this->builder = Database::table($this->table);
 
-			/* get attributes */
-			$result = $this->builder->results('one');
+		}
 
-			$cols = array_keys($result);
 
-			foreach($cols as $col) {
-				$this->attributes[$col] = '';
-			}
-
+		public function GetTable() {
+			 return $this->table;
 		}
 
 		public function GetAttributeNames() {
 			return array_keys($this->attributes);
 		}
+
 
 		public static function Fill($data) {
 
@@ -41,19 +38,43 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		}
 
 		/* get relationship within ORM */
-		public function Relation($name) {
+		public static function Relationship($name) {
+
+			$model = get_called_class();
+			$model_obj = new $model(false);
+			
+			return $model_obj->Relation($name, true);
+		}
+
+
+		public function Relation($name, $full = false) {
+
 			/* find correct relation - this currently only applies to 1-* and *-1 relationships - now allows belongs */
 			$model_name = $this->relationships[$name]['model'];
 
-			$relation_key = $this->id;
+			$relation_key = 'id';
+			$relation_value = $this->id;
 
 			if(isset($this->relationships[$name]['relation_key'])) {
 				$attribute = $this->relationships[$name]['relation_key'];
 
-				$relation_key = $this->$attribute;
+				$relation_key = $attribute;
+				$relation_value = $this->$attribute;
 			}
+			/* get table for join operation */
+			$table = $this->GetTable();
 
-			$model_obj = $model_name::where(array($this->relationships[$name]['key'] ,'=', $relation_key));
+			/* get relation table */
+			$relation_model_obj = new $model_name();
+			$relation_table = $relation_model_obj->GetTable();
+
+			$model_name = get_called_class();
+
+			$model_obj = $model_name::join(array($relation_table, $table . '.' . $relation_key, '=', $relation_table .'.'.$this->relationships[$name]['key']));
+			
+			if(!$full) {
+				$model_obj->where(array($table .'.' . $relation_key, '=', $relation_value));
+			}
 
 			return $model_obj;
 		}
@@ -97,6 +118,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		}
 
 		public function Save() {
+
+			/* if no id set, then the user actually wants a create not a save */
+			if($this->id == "") {
+				$this->Create();
+				return $this;
+			}
+
 			$this->builder->where(array($this->key, '=', $this->attributes[$this->key]));
 			$this->builder->update($this->attributes);
 
@@ -114,7 +142,13 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 		public function __get($key)
 	    {
-	        return $this->attributes[$key];
+	    	if(isset($this->attributes[$key])) {
+	        	return $this->attributes[$key];
+	    	}
+
+	    	else {
+	    		return "";
+	    	}
 	    }
 
 	    public function __set($key, $value)
@@ -138,6 +172,8 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 
 		public static function  __callStatic($method, $args) {
+
+
 			$model = get_called_class();
 			$obj = new $model();
 
@@ -150,7 +186,30 @@ Application::Import('Desmond::Database::ORM::IModel.php');
     			else if($args[0] == 'one') {
     				$result = call_user_func_array(array($obj->GetBuilder(), $method), $args);
 
-    				$model_name = get_called_class();
+    				if(isset($this->GetBuilder()->metadata['join_table']) && $this->GetBuilder()->metadata['join_table'] != '') {
+						/* we search through the relationships to find a valid model */
+
+						$relationship = false;
+
+						foreach($this->relationships as $relationship) {
+							$model = $relationship['model'];
+							$model_obj = new $model();
+							
+							if($model_obj->GetTable() == $this->GetBuilder()->metadata['join_table']) {
+								$model_name = $model;
+							}
+						}
+
+						/* so we cannot find a relationship, return stdclass results */
+						if(!$relationship) {
+							return $result;
+						}
+					}
+
+					else {
+ 						$model_name = get_called_class();
+ 					}
+
 
     				if($result != null) {
     					return $model_name::Fill($result);
@@ -170,7 +229,31 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 				/* we need to avoid the n+1 problem - so don't find the model, instead assign the variables we have */
 				foreach($results as $result) { 
- 					$model_name = get_called_class();
+
+    				if(isset($obj->GetBuilder()->metadata['join_table']) && $obj->GetBuilder()->metadata['join_table'] != '') {
+						/* we search through the relationships to find a valid model */
+
+						$relationship = false;
+
+						foreach($obj->relationships as $relationship) {
+							$model = $relationship['model'];
+							$model_obj = new $model();
+							
+							if($model_obj->GetTable() == $obj->GetBuilder()->metadata['join_table']) {
+								$model_name = $model;
+							}
+						}
+
+						/* so we cannot find a relationship, return stdclass results */
+						if(!$relationship) {
+							return $results;
+						}
+					}
+
+					else {
+ 						$model_name = get_called_class();
+ 					}
+
 
  					$model_obj = new $model_name();
 
@@ -204,6 +287,7 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 		public function __call($method, $args)
     	{
+
     		if(count($args) != 0 && $method == 'results') {
 
     			if($args[0] == 'json') {
@@ -211,10 +295,32 @@ Application::Import('Desmond::Database::ORM::IModel.php');
     			}
 
     			else if($args[0] == 'one') {
+
     				$result = call_user_func_array(array($this->GetBuilder(), $method), $args);
 
-    				$model_name = get_called_class();
+    				if(isset($this->GetBuilder()->metadata['join_table']) && $this->GetBuilder()->metadata['join_table'] != '') {
+						
+						$relationship = false;
 
+						foreach($this->relationships as $relationship) {
+							$model = $relationship['model'];
+							$model_obj = new $model();
+							
+							if($model_obj->GetTable() == $this->GetBuilder()->metadata['join_table']) {
+								$model_name = $model;
+							}
+						}
+
+						/* so we cannot find a relationship, return stdclass results */
+						if(!$relationship) {
+							return $result;
+						}
+
+					}
+
+					else {
+						$model_name = get_called_class();
+					}
     				if($result != null) {
     					return $model_name::Fill($result);
     				}
@@ -233,7 +339,31 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 
 				/* we need to avoid the n+1 problem - so don't find the model, instead assign the variables we have */
 				foreach($results as $result) { 
- 					$model_name = get_called_class();
+					
+					if(isset($this->GetBuilder()->metadata['join_table']) && $this->GetBuilder()->metadata['join_table'] != '') {
+						/* we search through the relationships to find a valid model */
+
+						$relationship = false;
+
+						foreach($this->relationships as $relationship) {
+							$model = $relationship['model'];
+							$model_obj = new $model();
+							
+							if($model_obj->GetTable() == $this->GetBuilder()->metadata['join_table']) {
+								$model_name = $model;
+							}
+						}
+
+						/* so we cannot find a relationship, return stdclass results */
+						if(!$relationship) {
+							return $results;
+						}
+					}
+
+					else {
+ 						$model_name = get_called_class();
+ 					}
+
 
  					$model_obj = new $model_name();
 

@@ -8,6 +8,7 @@
 			public function GetBuilder();
 			public function GetJson();	
 			public function GetAttributeNames();
+			public function GetTable();
 	}
 
 ?>
