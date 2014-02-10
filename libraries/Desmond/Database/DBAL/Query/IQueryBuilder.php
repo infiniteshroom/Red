@@ -18,12 +18,12 @@
 		public function insert($data = array());
 		public function orderby($col, $order);
 		public function join($filter = array());
-
-		/* stub */
-		/*
 		public function limit($amount, $offset=0);
 
-		public function cache($seconds);*/
+
+		/* stub */
+
+		/*public function cache($seconds);*/
 
 		//misc
 		public function sql();

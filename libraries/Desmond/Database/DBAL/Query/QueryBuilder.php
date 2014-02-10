@@ -12,6 +12,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		private $conn = null;
 		private $table = "";
 		private $orderstring = "";
+		private $limitstring = "";
 		
 		public $metadata = array();
 
@@ -26,7 +27,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'orderby' => 'ORDER BY {col} {order}',
 			'orderbymore' => ', {col} {order}',
 			'join' => 'INNER JOIN {table} ON {col1} {operator} {col2}',
-			'joinselect' => 'SELECT {filtertable}.* FROM {table}'
+			'joinselect' => 'SELECT {filtertable}.* FROM {table}',
+			'limit' => 'LIMIT {amount} OFFSET {offset}',
 		);
 
 		public $where_operators = array(
@@ -140,6 +142,17 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			return $this;
 		}
 
+		public function limit($amount, $offset=0) {
+			
+			$this->limitstring = $this->ProcessString('limit', array(
+			'amount' => $amount,
+			'offset' => $offset,
+			));
+
+
+			return $this;
+		}
+
 		public function orderby($col, $order) {
 
 			if($this->orderstring == '') {
@@ -159,10 +172,6 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			return $this;
 		}
 
-		public function limit($amount, $offset=0) {
-
-		}
-
 
 
 		//final methods
@@ -176,9 +185,11 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 			$statement = new DesmondDatabaseQuery($this->conn);
 
-			/* add on order statements if exists */
+			/* add on order statements and limits if exists */
 
 			$this->sql .= ' ' . $this->orderstring;
+			$this->sql .= ' ' . $this->limitstring;
+
 			$statement->Execute($this->sql);
 
 
@@ -266,6 +277,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			
 			$statement = new DesmondDatabaseQuery($this->conn);
 			$statement->Execute($sql);
+
+			return $statement->GetInsertID();
 
 
 

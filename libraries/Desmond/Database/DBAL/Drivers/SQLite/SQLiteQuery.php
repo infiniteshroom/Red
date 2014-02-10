@@ -65,5 +65,9 @@ class SQLiteQuery implements IDatabaseQuery {
 
 		return $results['count'];
 	}
+
+	public function GetInsertID() {
+		return $this->conn_obj->lastInsertRowID();
+	}
 }
 ?>

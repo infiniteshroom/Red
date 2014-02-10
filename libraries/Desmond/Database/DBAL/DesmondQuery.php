@@ -54,6 +54,11 @@
 			return $this->driverobj->Count();
 		}
 
+		public function GetInsertID() {
+			return $this->driverobj->GetInsertID();
+		}
+
+
 		public function BindParameter($name, $value, $type) {
 			$this->parameters[] = array(
 				'name' => $name,

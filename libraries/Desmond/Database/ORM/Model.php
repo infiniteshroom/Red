@@ -112,7 +112,9 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		}
 
 		public function Create() {
-			$this->builder->insert($this->attributes);
+			$id = $this->builder->insert($this->attributes);
+
+			$this->id = $id;
 
 			return $this;
 		}

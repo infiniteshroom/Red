@@ -57,5 +57,10 @@ class MySQLQuery implements IDatabaseQuery {
 
 		return $this->result->num_rows;
 	}
+
+	public function GetInsertID() {
+		return mysqli_insert_id($this->conn_obj);
+	}
+
 }
 ?>

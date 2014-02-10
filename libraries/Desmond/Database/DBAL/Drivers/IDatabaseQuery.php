@@ -5,6 +5,7 @@ Application::Import('Desmond::Database::DBAL::Drivers::IDatabaseConnection.php')
 interface IDatabaseQuery {
 	public function __construct(IDatabaseConnection $conn);
 	public function Execute($sql);
+	public function GetInsertID();
 	public function FetchOne();
 	public function FetchAll();
 	public function FetchObject();
