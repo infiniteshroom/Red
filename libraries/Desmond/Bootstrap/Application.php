@@ -35,6 +35,7 @@ class DesmondApplication {
 		$this->settings['session'] = include($this->path['config'] . 'Session.php');
 		$this->settings['datastores'] = include($this->path['config'] . 'Datastores.php');
 		$this->settings['mail'] = include($this->path['config'] . 'Mail.php');
+		$this->settings['permissions'] = include($this->path['config'] . 'Permissions.php');
 
 		/* if mode is cli we need to do some different things */
 		if($this->mode == 'cli') {

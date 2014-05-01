@@ -2,6 +2,8 @@
 Application::import('Desmond::Controller::IController.php');
 	class Controller implements IController {
 		protected $variables = array();
+		protected $permissions = array();
+
 		protected $viewname = "";
 		protected $restful = true;
 
@@ -109,6 +111,42 @@ Application::import('Desmond::Controller::IController.php');
 			}
 			
 			$this->request->Action('index');
+		}
+
+		/* check permissions for action */
+			
+		if(isset($this->permissions[$action])) {
+			/* get user object */
+//var_dump($group);
+			$group = $this->permissions[$action];
+
+
+
+			if($group == 'guest' && !Auth::isGuest()) {
+
+				$method_error = 'permission_error';
+				$result = $this->$method_error($action, $group);
+
+				$this->setActionContent($result);
+
+				return;
+			}
+
+
+				$user = Auth::User();
+
+				$attribute = Application::Setting('permissions::attribute');
+				$group_values = Application::Setting('permissions::groups');
+
+
+				if($user->$attribute != $group_values[$group]) {
+					$method_error = 'permission_error';
+					$result =  $this->$method_error($action, $group);
+
+					$this->setActionContent($result);
+
+					return;
+				}
 		}
 
 		/* determine if action takes parameters */

@@ -5,7 +5,7 @@
 			'host' => '127.0.0.1',
 			'username' => 'root',
 			'password' => 'poke96',
-			'database' => 'test',
+			'database' => 'blog',
 		)
 		/*
 		'sqlite' => array(
