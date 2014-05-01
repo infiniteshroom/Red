@@ -1,5 +1,6 @@
 <?php
 
+Application::import('Desmond::HTTP::Router::Query.php');
 class DesmondRouterMethods {
 	const HTTP_GET = 'GET';
 	const HTTP_POST = 'POST';
@@ -108,6 +109,13 @@ class DesmondRouter {
 			$controller->render();
 			}
 		}
+	}
+
+	public function Route($route) {
+		/* setup a router query */
+		$query = new RouterQuery($route);
+
+		return $query;
 	}
 
 	public function Map($route, $item, $method='all') {

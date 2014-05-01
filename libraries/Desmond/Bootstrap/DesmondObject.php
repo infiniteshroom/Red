@@ -17,6 +17,9 @@
 		public static function override($object) {
 			static::$instance = $object;
 
+			/* setup object instance in desmond container */
+			Desmonds::AddDesmond(get_called_class(), $object);
+
 		}
 
 		public static function whoami() {
