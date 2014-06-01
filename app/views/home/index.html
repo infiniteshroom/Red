@@ -32,10 +32,14 @@
     }
 
     </style>
+     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+     <script src="{{ app.Path('web') }}/assets/default/js/red.js"></script>
+
   </head>
 
 <body style='background-color:#161616;overflow:hidden'>
-	    <p><img src='{{ app.Path("web") }}/assets/default/images/redlogo.png' alt='logo'/></p>
+	    <p><img class='test' src='{{ app.Path("web") }}/assets/default/images/redlogo.png' alt='logo'/></p>
+<input type='hidden' value='test' id='test_name'>
 </body>
 
 </html>

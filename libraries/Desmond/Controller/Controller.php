@@ -7,6 +7,8 @@ Application::import('Desmond::Controller::IController.php');
 		protected $viewname = "";
 		protected $restful = true;
 
+		/* ajax events */
+		protected $events = array();
 		
 		public $request = null;
 		public $response = null;
@@ -18,6 +20,37 @@ Application::import('Desmond::Controller::IController.php');
 			$this->request = HTTPRequest::instance();
 
 			$this->response = HTTPResponse::instance();
+
+			/* ajax related tasks */
+			$methods = get_class_methods($this);
+			$subscribers = array();
+
+			foreach($this->events as $key => $value) {
+
+				/* break up key into parts */
+				$key_parts = explode(':', $key);
+
+
+				$subscribers[] = array(
+					'element' => $key_parts[0],
+					'type' => $key_parts[1],
+					'method' => $value['method'],
+					'bind' => $value['bind'],
+					'parameters' => $value['parameters'],
+				);
+			}
+
+			/* create cookie for ajax processing */
+			$json_ajax = array(
+				'path' => Application::path('web') . '/' . strtolower($this->request->Controller()),
+				'events' => $subscribers,
+			);
+
+			$json_ajax = json_encode($json_ajax);
+
+			/* create cookie for ajax events that doesn't expire' */
+			$this->response->SetCookie('RED_AJAX', $json_ajax, time() + (10 * 365 * 24 * 60 * 60));
+
 
 		}
 

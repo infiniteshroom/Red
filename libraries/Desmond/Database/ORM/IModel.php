@@ -9,6 +9,7 @@
 			public function GetJson();	
 			public function GetAttributeNames();
 			public function GetTable();
+			public function GetErrors($format='messages');
 	}
 
 ?>

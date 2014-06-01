@@ -22,8 +22,10 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'where' => 'WHERE {column} {operator} {value}',
 			'and' => 'AND {column} {operator} {value}',
 			'empty' => 'TRUNCATE {table}',
+			'in' => 'WHERE {col} IN ({values})',
 			'insert' => 'INSERT INTO {table} ({cols}) VALUES ({values})',
 			'update' => 'UPDATE {table} SET {values}',
+			'groupby' => 'GROUP BY {col}',
 			'orderby' => 'ORDER BY {col} {order}',
 			'orderbymore' => ', {col} {order}',
 			'join' => 'INNER JOIN {table} ON {col1} {operator} {col2}',
@@ -256,6 +258,35 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			return $this;
 		}
 
+
+		public function groupby($col) {
+			if($this->table == '') {
+				throw new QueryBuilderNoTableException();
+			}
+
+			$this->sql .=  ' ' . $this->ProcessString('groupby', array(
+			'col' => $col,
+			));
+		}
+
+		public function in($col, $data = array()) {
+			if($this->table == '') {
+				throw new QueryBuilderNoTableException();
+			}
+
+			$values = array();
+
+			foreach($data as $key => $value) {
+				$values[$key] = $this->ProcessParamaterType($value);
+			}
+
+
+			$this->sql .=  ' ' . $this->ProcessString('in', array(
+			'values' => implode(',', $values), 
+			'col' => $col,
+			));
+		}
+
 		public function insert($data = array()) {
 			if($this->table == '') {
 				throw new QueryBuilderNoTableException();
@@ -316,7 +347,14 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		}
 
 		public function raw($sql) {
-			$this->sql = $sql;
+
+			if($this->sql == '') {
+				$this->sql .= $sql;
+			}
+
+			else {
+				$this->sql .= ' ' . $sql;
+			}
 
 			return $this;
 		}

@@ -50,16 +50,24 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
     }
 
     </style>
+     <script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js\"></script>
+     <script src=\"";
+        // line 36
+        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["app"]) ? $context["app"] : null), "Path", array(0 => "web"), "method"), "html", null, true);
+        echo "/assets/default/js/red.js\"></script>
+
   </head>
 
 <body style='background-color:#161616;overflow:hidden'>
-\t    <p><img src='";
-        // line 38
+\t    <p><img class='test' src='";
+        // line 41
         echo twig_escape_filter($this->env, $this->getAttribute((isset($context["app"]) ? $context["app"] : null), "Path", array(0 => "web"), "method"), "html", null, true);
         echo "/assets/default/images/redlogo.png' alt='logo'/></p>
+<input type='hidden' value='test' id='test_name'>
 </body>
 
-</html>";
+</html>
+";
     }
 
     public function getTemplateName()
@@ -74,6 +82,6 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
 
     public function getDebugInfo()
     {
-        return array (  58 => 38,  19 => 1,);
+        return array (  64 => 41,  56 => 36,  19 => 1,);
     }
 }

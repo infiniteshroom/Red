@@ -1,18 +1,22 @@
 <?php
 Application::Import('Desmond::Database::ORM::IModel.php');
+Application::Import('Valitron::Validator::Validator.php');
+
 	class Model implements IModel {
 		protected $builder = null;
 		protected $table = '';
 		protected $key = 'id';
 		protected $datastore = 'default'; 
+		protected $validators = array();
 		protected $attributes = array();
 		protected $relationships = array();
+
+		private $errors = array();
 
 
 		public function __construct() {
 			/* bind query builder */
 			$this->builder = Database::table($this->table);
-
 		}
 
 
@@ -112,25 +116,64 @@ Application::Import('Desmond::Database::ORM::IModel.php');
 		}
 
 		public function Create() {
-			$id = $this->builder->insert($this->attributes);
 
-			$this->id = $id;
+			/* process validators if they exist */
+			$v = new Validator($this->attributes);
+
+			$v->rules($this->validators);
+
+			if($v->validate()) {
+
+				$id = $this->builder->insert($this->attributes);
+
+				$this->id = $id;
+			}
+
+			else {
+				$this->errors = $v->errors();
+			}
 
 			return $this;
 		}
 
 		public function Save() {
 
-			/* if no id set, then the user actually wants a create not a save */
-			if($this->id == "") {
-				$this->Create();
-				return $this;
+			/* process validators if they exist */
+			$v = new Validator($this->attributes);
+
+			$v->rules($this->validators);
+
+			if($v->validate()) {
+
+				/* if no id set, then the user actually wants a create not a save */
+				if($this->id == "") {
+					$this->Create();
+					return $this;
+				}
+
+				$this->builder->where(array($this->key, '=', $this->attributes[$this->key]));
+				$this->builder->update($this->attributes);
 			}
 
-			$this->builder->where(array($this->key, '=', $this->attributes[$this->key]));
-			$this->builder->update($this->attributes);
+			else {
+				$this->errors = $v->errors();
+			}
 
 			return $this;
+		}
+
+		public function GetErrors($format='messages') {
+			if($format == 'messages') {
+				return $this->errors;
+			}
+
+			elseif($format == 'inputs') {
+				return array_keys($this->errors);
+			}
+
+			else if($format == 'json') {
+				return json_encode($this->errors);
+			}
 		}
 
 		public function Delete() {

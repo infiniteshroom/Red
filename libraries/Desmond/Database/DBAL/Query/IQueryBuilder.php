@@ -6,6 +6,8 @@
 		//builder methods
 		public function table($name);
 		public function where($filter = array());
+		public function in($col, $data = array());
+		public function groupby($col);
 		public function columns($cols = array());
 		public function raw($sql);
 		public function distinct();
