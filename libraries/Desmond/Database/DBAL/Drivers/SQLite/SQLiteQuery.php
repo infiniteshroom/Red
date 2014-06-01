@@ -26,8 +26,14 @@ class SQLiteQuery implements IDatabaseQuery {
 			throw new DatabaseNoQueryException();
 		}
 
-		$records = $this->FetchAll();
-		$record = $records[0];
+		$record = $this->result->fetchArray();
+
+		/* remove numeric elements */
+		foreach($record as $key => $value) {
+			if(!is_string($key)) {
+				unset($record[$key]);
+			}
+		}
 
 		return $record;
 	}
@@ -37,7 +43,20 @@ class SQLiteQuery implements IDatabaseQuery {
 			throw new DatabaseNoQueryException();
 		}
 
-		return $this->result->fetchArray();
+		$results = array();
+		while($row=$this->result->fetchArray()){
+
+			/* remove numeric elements */
+			foreach($row as $key => $value) {
+				if(!is_string($key)) {
+					unset($row[$key]);
+				}
+			}
+
+		   $results[] = $row;
+		}
+
+		return $results;
 	}
 
 	public function FetchObject() {
@@ -46,24 +65,30 @@ class SQLiteQuery implements IDatabaseQuery {
 		}
 
 		$records = $this->FetchAll();
-		$record = $records[0];
 
-		$object = new stdClass();
 
-		foreach($record as $key => $value) {
-			$object->$key = $value;
+		$objects = array();
+
+		foreach($records as $record) {
+			$object = new stdClass();
+			foreach($record as $key => $value) {
+
+				if(is_string($key)) {
+					$object->$key = $value;
+				}
+			}
+
+			$objects[] = $object;
+
 		}
-
-		return $object;
+		return $objects;
 	}
 	public function Count() {
 		if($this->result == null) {
 			throw new DatabaseNoQueryException();
 		}
 
-		$results = $this->FetchAll();
-
-		return $results['count'];
+		return $this->result->numColumns();
 	}
 
 	public function GetInsertID() {
