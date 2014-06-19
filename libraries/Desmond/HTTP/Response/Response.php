@@ -27,7 +27,7 @@ Application::Import('Desmond::HTTP::Response::IResponse.php');
 			return $this->content;
 		}
 
-		public function Redirect($location) {
+		public function Redirect($location, $data=array()) {
 			/* controller::action or pure location */
 
 			/* we set content here, to avoid view being rendered. */
@@ -35,6 +35,11 @@ Application::Import('Desmond::HTTP::Response::IResponse.php');
 
 			if(strstr($location, '::') === false) {
 				$this->SetHeader('Location', Application::Path('web') . $location);
+			}
+
+			/* redirect and carry over some template variables */
+			if(count($data) > 0) {
+				Session::Set('redirect_data', $data);
 			}
 
 			

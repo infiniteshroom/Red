@@ -29,5 +29,14 @@
 			$name::override($instance);
 		}
 
+		public function SetFunctionProxy($desmond, $function, $proxy) {
+
+			$desmond::setProxy($function, $proxy);
+		}
+
+		public function GetFunctionProxy($desmond, $name) {
+			return $desmond::getProxy($name);
+		}
+
 	}
 ?>

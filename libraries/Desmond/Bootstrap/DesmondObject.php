@@ -1,6 +1,11 @@
 <?php
 
 	class DesmondObject implements IDesmondObject {
+
+
+		/* proxies allow you to define function aliases for an object */
+		protected static $proxies = array();
+
 		/* no contructon here */
 		private function __construct() {
 		}
@@ -11,6 +16,24 @@
 	        }
 
 	        return static::$instance;
+	    }
+
+	    public static function getProxy($name) {
+	    	$proxies = array_keys(static::$proxies);
+
+	    	if(in_array($name, $proxies)) {
+	    	  	$name = static::$proxies[$name];
+	    	  	return $name;
+	    	 }
+
+	    	 else {
+	    	 	return $name;
+	    	 }
+
+	    }
+
+	    public static function setProxy($function, $proxy) {
+	    	static::$proxies[$proxy] = $function;
 	    }
 
 
@@ -28,6 +51,7 @@
 
 		public static function __callStatic($name, $arguments)
 	    {
+	    	 $name = static::getProxy($name);
 	    	  if (preg_match('/^([gs]et)([A-Z])(.*)$/', $name, $match)) {
 			    $reflector = new \ReflectionClass(static::$instance);
 			    $property = strtolower($match[2]). $match[3];

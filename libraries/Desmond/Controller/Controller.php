@@ -51,7 +51,11 @@ Application::import('Desmond::Controller::IController.php');
 			/* create cookie for ajax events that doesn't expire' */
 			$this->response->SetCookie('RED_AJAX', $json_ajax, time() + (10 * 365 * 24 * 60 * 60));
 
-
+			/* check for any redirect data */
+			if(Session::Get('redirect_data') != '') {
+				$this->variables += Session::Get('redirect_data');
+				Session::Set('redirect_data', '');
+			}
 		}
 
 		/* allows you to set variables for the controller */

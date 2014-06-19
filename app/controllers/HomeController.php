@@ -22,15 +22,16 @@
 
 			$test = new Test();
 			$test->string = 1;
-			$test->num = 'dddd';
+			$test->num = 'dddd';			
 			//$test->Save();
 
 			//var_dump($test->GetErrors('inputs'));
 		}
 
-		public function post_test() {
-
-			$name = $this->request->Form('name');
+		public function any_test() {
+			//Desmonds::SetFunctionProxy('HTTPRequest', 'Form', 'Post');
+			//$name = HTTPRequest::Post('test');
+			$name = HTTPRequest::Form('test');
 			return "<p style='margin: 0 auto;color:white;display:block;'>you clicked the logo =p, and sent value $name</p>";
 		}
 
