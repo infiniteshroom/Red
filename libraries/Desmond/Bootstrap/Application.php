@@ -123,6 +123,7 @@ class DesmondApplication {
 			HTTPResponse::override(new DesmondResponse());
 
 
+			Database::override(new DesmondDatabase());
 
 			/* setup session manager */
 
@@ -145,7 +146,6 @@ class DesmondApplication {
 			}
 
 			Template::override(new TwigTemplate());
-			Database::override(new DesmondDatabase());
 
 			/* setup language manager */
 			Application::Import('Desmond::Language::Loader::*');
