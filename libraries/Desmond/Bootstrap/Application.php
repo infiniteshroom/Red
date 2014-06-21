@@ -132,6 +132,13 @@ class DesmondApplication {
 				Session::override(new MemorySession());
 			}
 
+			else if(Application::Setting('session::type') == 'database') {
+				Application::Import('Desmond::Session::Database::*');
+
+				Session::override(new DatabaseSession());
+			}
+
+
 			else {
 				Application::Import('Desmond::Session::Fallback::*');
 				Session::override(new FallbackSession());

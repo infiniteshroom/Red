@@ -211,7 +211,6 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			 	return json_encode($statement->FetchObject());
 			}
 
-
 		}
 		public function count() {
 

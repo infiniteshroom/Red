@@ -32,7 +32,7 @@
 		}
 
 		public function GetActiveConnection() {
-			return $this->datastores[$connection];
+			return $this->datastores[$this->active];
 		}
 
 	}
