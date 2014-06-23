@@ -21,7 +21,7 @@
 			foreach($this->parameters as $parameter) {
 
 				$name = $parameter['name'];
-				$value = $parameter['value'];
+				$value = $this->Escape($parameter['value']);
 
 				if($parameter['type'] == 'string') {
 					$sql = str_replace("@{$name}", "'{$value}'", $sql);
@@ -56,6 +56,10 @@
 
 		public function GetInsertID() {
 			return $this->driverobj->GetInsertID();
+		}
+
+		public function Escape($input) {
+			return $this->driverobj->Escape($input);
 		}
 
 

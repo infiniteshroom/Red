@@ -94,5 +94,9 @@ class SQLiteQuery implements IDatabaseQuery {
 	public function GetInsertID() {
 		return $this->conn_obj->lastInsertRowID();
 	}
+
+	public function Escape($input) {
+		return sqlite_escape_string($input);
+	}
 }
 ?>

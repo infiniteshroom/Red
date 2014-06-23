@@ -10,6 +10,7 @@ interface IDatabaseQuery {
 	public function FetchAll();
 	public function FetchObject();
 	public function Count();
+	public function Escape($input);
 }
 
 ?>

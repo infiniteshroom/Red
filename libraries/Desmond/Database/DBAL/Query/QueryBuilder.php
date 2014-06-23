@@ -374,6 +374,10 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 		private function ProcessParamaterType($parameter) {
 
+			$statement = new DesmondDatabaseQuery($this->conn);
+			
+			$parameter = $statement->Escape($parameter);
+
 			if(is_int($parameter)) {
 				return (int) $parameter;
 			}

@@ -62,5 +62,9 @@ class MySQLQuery implements IDatabaseQuery {
 		return mysqli_insert_id($this->conn_obj);
 	}
 
+	public function Escape($input) {
+		return mysqli_real_escape_string($this->conn_obj, $input);
+	}
+
 }
 ?>
