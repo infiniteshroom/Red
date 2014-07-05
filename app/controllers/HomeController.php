@@ -20,11 +20,6 @@
 
 		public function any_index() {
 
-			$test = new Test();
-			$test->string = 1;
-			$test->num = 'dddd';			
-			//$test->Save();
-
 			//var_dump($test->GetErrors('inputs'));
 		}
 

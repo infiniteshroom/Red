@@ -11,6 +11,6 @@ function isAdmin() {
 	Router::Map('home', 'HomeController');
 
 	Router::Map('/db', function() {
-		Kint::dump(Images::find(2169)->Relation('Comments')->results());
+		var_dump(Users::where(array('id', '=', 1))->results('one'));
 	});
 ?>

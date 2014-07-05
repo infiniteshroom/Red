@@ -265,9 +265,15 @@ Application::Import('Valitron::Validator::Validator.php');
     				}
     			}
 
+    			 else if($args[0] == 'array') {
+					$result = call_user_func_array(array($obj->GetBuilder(), $method), $args);
+
+					return $result;
+				}
+
     		}
 
-    		else if(count($args) == 0 && $method == 'results') {
+    		else if((count($args) == 0 && $method == 'results')) {
 			   $results = call_user_func_array(array($obj->GetBuilder(), $method), $args);
 
 				$results_obj = array();
@@ -375,6 +381,11 @@ Application::Import('Valitron::Validator::Validator.php');
     				}
     			}
 
+    			else if($args[0] == 'array') {
+					$result = call_user_func_array(array($this->GetBuilder(), $method), $args);
+
+					return $result;
+				}
     		}
 
     		else if(count($args) == 0 && $method == 'results') {

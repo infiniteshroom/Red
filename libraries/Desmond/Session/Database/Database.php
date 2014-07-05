@@ -30,11 +30,13 @@ class DatabaseSession implements ISession {
 	}
 
 	public function __construct() {
-		
+
+		/* easiest fix for now */
+		$connection = Database::GetActiveConnection();
 		$this->db = Database::table('sessions');
 
 		try {
-			$this->db->limit(1,0)->results('one');
+			$this->db->results('one');
 		}
 
 		catch(DatabaseQueryException $error) {
@@ -75,7 +77,7 @@ class DatabaseSession implements ISession {
 	
 	public function Create($args=null) {
 		$this->db = Database::table('sessions');
-		//let's save our dbclass instance for querying the database
+
             
 		//Hello Cookie are you there
         
@@ -101,6 +103,7 @@ class DatabaseSession implements ISession {
 			/* get the information back to check our session was correctly made */
 			$sessions_data = $this->db->where(array('id', '=', $this->session_id))->results('array');
 
+			$sessions_data = $sessions_data[0];
 			$this->vars = $sessions_data;
 
 			unset($this->vars['vars']);
@@ -113,6 +116,8 @@ class DatabaseSession implements ISession {
 				$session_id = $_COOKIE['RED_SID'];
 
 				$session = $this->db->where(array('id', '=', $session_id))->results('array');
+
+				$session = $session[0];
 
 				//Hey don't spoof our session, we don't like that.
 				if($session['user_agent'] == $_SERVER['HTTP_USER_AGENT'] && $session['user_ip'] == $_SERVER['REMOTE_ADDR'] ) 

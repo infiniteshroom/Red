@@ -16,27 +16,33 @@
 
 		}
 
-		public function Execute($sql) {
-			/* parse parameters */
+		private function GetParameter($name) {
 			foreach($this->parameters as $parameter) {
-
-				$name = $parameter['name'];
-				$value = $this->Escape($parameter['value']);
-
-				if($parameter['type'] == 'string') {
-					$sql = str_replace("@{$name}", "'{$value}'", $sql);
+				if($parameter['name'] == $name) {
+					return $parameter;
 				}
+			}
+		}
 
-				else if($parameter['type'] == 'int') {
-					$sql = str_replace("@{$name}", (int) $value, $sql);
-				}
+		public function Execute($sql) {
 
-				else {
-					$sql = str_replace("@{$name}", "{$value}", $sql);
+			/* parse parameters */
+			$sql_parts = explode(' ', $sql);
+
+			foreach($sql_parts as $sql_part) {
+				if(strpos($sql_part, "@") === 0) {
+
+					$parameter = $this->GetParameter(str_replace("@", "", $sql_part));
+					$this->AddParameter($parameter['value'], $parameter['type']);
+
+					$sql = str_replace($sql_part, "?", $sql);
 				}
 			}
 
+
+
 			$this->driverobj->Execute($sql);
+			$this->parameters = array();
 		}	
 
 		public function FetchOne() {
@@ -62,6 +68,9 @@
 			return $this->driverobj->Escape($input);
 		}
 
+		public function AddParameter($param, $type) {
+			return $this->driverobj->AddParameter($param, $type);
+		}
 
 		public function BindParameter($name, $value, $type) {
 			$this->parameters[] = array(

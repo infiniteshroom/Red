@@ -59,13 +59,8 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
   </head>
 
 <body style='background-color:#161616;overflow:hidden'>
-
-<h1 style='color:white;'>";
-        // line 42
-        echo twig_escape_filter($this->env, (isset($context["go"]) ? $context["go"] : null), "html", null, true);
-        echo "</h1>
 \t    <p><img class='test' src='";
-        // line 43
+        // line 41
         echo twig_escape_filter($this->env, $this->getAttribute((isset($context["app"]) ? $context["app"] : null), "Path", array(0 => "web"), "method"), "html", null, true);
         echo "/assets/default/images/redlogo.png' alt='logo'/></p>
 <input type='hidden' value='test' id='test_name'>
@@ -87,6 +82,6 @@ class __TwigTemplate_1b78ecf1823d6a62705f0e2be9899d7191fc1d44c48d6142c4be09d0ee0
 
     public function getDebugInfo()
     {
-        return array (  69 => 43,  65 => 42,  56 => 36,  19 => 1,);
+        return array (  64 => 41,  56 => 36,  19 => 1,);
     }
 }

@@ -10,6 +10,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 		private $sql = "";
 		private $conn = null;
+		private $statement = null;
 		private $table = "";
 		private $orderstring = "";
 		private $limitstring = "";
@@ -17,20 +18,20 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		public $metadata = array();
 
 		public $strings = array(
-			'select' => 'SELECT {columns} FROM {table}',
-			'selectall' => 'SELECT * FROM {table}',
-			'where' => 'WHERE {column} {operator} {value}',
-			'and' => 'AND {column} {operator} {value}',
-			'empty' => 'TRUNCATE {table}',
-			'in' => 'WHERE {col} IN ({values})',
-			'insert' => 'INSERT INTO {table} ({cols}) VALUES ({values})',
-			'update' => 'UPDATE {table} SET {values}',
-			'groupby' => 'GROUP BY {col}',
-			'orderby' => 'ORDER BY {col} {order}',
-			'orderbymore' => ', {col} {order}',
-			'join' => 'INNER JOIN {table} ON {col1} {operator} {col2}',
-			'joinselect' => 'SELECT {filtertable}.* FROM {table}',
-			'limit' => 'LIMIT {amount} OFFSET {offset}',
+			'select' => 'SELECT @columes FROM @table',
+			'selectall' => 'SELECT * FROM @table',
+			'where' => 'WHERE @column @operator @value',
+			'and' => 'AND @column @operator @value',
+			'empty' => 'TRUNCATE @table',
+			'in' => 'WHERE @col IN (@values)',
+			'insert' => 'INSERT INTO @table (@cols) VALUES (@values)',
+			'update' => 'UPDATE @table SET @values',
+			'groupby' => 'GROUP BY @col',
+			'orderby' => 'ORDER BY @col @order',
+			'orderbymore' => ', @col @order',
+			'join' => 'INNER JOIN @table ON @col1 @operator @col2',
+			'joinselect' => 'SELECT @filtertable.* FROM @table',
+			'limit' => 'LIMIT @amount OFFSET @offset',
 		);
 
 		public $where_operators = array(
@@ -45,6 +46,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 		function __construct(IDatabaseConnection $conn) {
 			$this->conn = $conn;
+			$this->statement = new DesmondDatabaseQuery($this->conn);
 		}
 		
 		//builder methods
@@ -65,9 +67,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'table' => $this->table,
 			));
 
-			$statement = new DesmondDatabaseQuery($this->conn);
-
-			$statement->Execute($this->sql);
+			$this->statement->Execute($this->sql);
 		}
 		public function where($filter = array()) {
 
@@ -90,8 +90,19 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			$sql = $this->ProcessString($query_type, array(
 				'column' => $filter[0],
 				'operator' => $filter[1],
-				'value' => $this->ProcessParamaterType($filter[2]), 
+				'value' => '?' 
 				));
+
+			if(is_int($filter[2])) {
+
+				//echo 'where: ' . $filter[2];
+				$this->statement->AddParameter($filter[2], 'int');
+			}
+
+			else {
+				//echo 'where: ' . $filter[2];
+				$this->statement->AddParameter($filter[2], 'string');
+			}
 
 			if(!$this->isWhereOperator($filter[1])) {
 				throw new QueryBuilderWhereOperatorException("SQL Where operator unknown '" . $filter[1] . "' {$sql}");
@@ -147,10 +158,12 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 		public function limit($amount, $offset=0) {
 			
 			$this->limitstring = $this->ProcessString('limit', array(
-			'amount' => $amount,
-			'offset' => $offset,
+			'amount' => '?',
+			'offset' => '?',
 			));
 
+			$this->statement->AddParameter($amount, 'int');
+			$this->statement->AddParameter($offset, 'int');
 
 			return $this;
 		}
@@ -183,33 +196,33 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				throw new QueryBuilderNoTableException();
 			}
 
-			
-
-			$statement = new DesmondDatabaseQuery($this->conn);
-
 			/* add on order statements and limits if exists */
 
 			$this->sql .= ' ' . $this->orderstring;
 			$this->sql .= ' ' . $this->limitstring;
 
-			$statement->Execute($this->sql);
+
+			$this->statement->Execute($this->sql);
 
 
 			if($type == 'object') {
-				return $statement->FetchObject();
+				return $this->statement->FetchObject();
 			}
 
 			else if($type == 'array') {
-				return $statement->FetchAll();
+
+				return $this->statement->FetchAll();
 			}
 
 			else if($type == 'one') {
-				return $statement->FetchOne();
+				return $this->statement->FetchOne();
 			}
 
 			else if($type == 'json') {
-			 	return json_encode($statement->FetchObject());
+			 	return json_encode($this->statement->FetchObject());
 			}
+
+			$this->statement = new DesmondDatabaseQuery($this->conn);
 
 		}
 		public function count() {
@@ -218,11 +231,10 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				throw new QueryBuilderNoTableException();
 			}
 
-			$statement = new DesmondDatabaseQuery($this->conn);
+			$this->statement->Execute($this->sql);
 
-			$statement->Execute($this->sql);
+			$count = $this->statement->Count();
 
-			$count = $statement->Count();
 
 			if($count == null) {
 				$count = 0;
@@ -238,11 +250,9 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			/* find offset of from statement */
 			$from_pos = strpos($this->sql, 'FROM');
 			$this->sql = str_replace(substr($this->sql, 0, $from_pos - 1), 'DELETE', $this->sql);
-
-			$statement = new DesmondDatabaseQuery($this->conn);
-
-			$statement->Execute($this->sql);
-
+			
+			$this->statement->Execute($this->sql);
+			$this->statement = new DesmondDatabaseQuery($this->conn);
 
 		}
 
@@ -276,9 +286,16 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			$values = array();
 
 			foreach($data as $key => $value) {
-				$values[$key] = $this->ProcessParamaterType($value);
-			}
+				$values[$key] = '?';
 
+				if(is_int($value)) {
+					$this->statement->AddParameter($value, 'int');
+				}
+
+				else {
+					$this->statement->AddParameter($value, 'string');
+				}
+			}
 
 			$this->sql .=  ' ' . $this->ProcessString('in', array(
 			'values' => implode(',', $values), 
@@ -296,7 +313,15 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			$values = array_values($data);
 
 			foreach($values as $key => $value) {
-				$values[$key] = $this->ProcessParamaterType($value);
+				$values[$key] = '?';
+
+				if(is_int($value)) {
+					$this->statement->AddParameter($value, 'int');
+				}
+
+				else {
+					$this->statement->AddParameter($value, 'string');
+				}
 			}
 
 			$sql = $this->ProcessString('insert', array(
@@ -305,12 +330,11 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			'values' => implode(',', $values), 
 			));
 			
-			$statement = new DesmondDatabaseQuery($this->conn);
-			$statement->Execute($sql);
+			$this->statement->Execute($sql);
 
-			return $statement->GetInsertID();
-
-
+			$insert_id = $this->statement->GetInsertID();
+			$this->statement = new DesmondDatabaseQuery($this->conn);
+			return $insert_id;
 
  		}
 
@@ -322,7 +346,15 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 			$update_strings = array();
 
 			foreach($cols as $key => $value) {
-				$update_strings[$key] = $value . ' = ' . $this->ProcessParamaterType($values[$key]);
+				$update_strings[$key] = $value . ' = ?';
+				
+				if(is_int($values[$key])) {
+					$this->statement->AddParameter($values[$key], 'int');
+				}
+
+				else {
+					$this->statement->AddParameter($values[$key], 'string');
+				}
 			}
 
 			$update_sql = implode(',', $update_strings);
@@ -339,9 +371,9 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				'values' => $update_sql,
 				));
 
-			$statement = new DesmondDatabaseQuery($this->conn);
-			$statement->Execute($update_sql . ' '. $sql);
-
+			$this->statement->Execute($update_sql . ' '. $sql);
+			$this->statement = new DesmondDatabaseQuery($this->conn);
+			
 			return $this;
 		}
 
@@ -366,35 +398,12 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 			$string = $this->strings[$string];
 			foreach($vars as $key => $value) {
-				$string = str_replace('{' . $key . '}', $value, $string);
+				$string = str_replace('@' . $key, $value, $string);
 			}
 
 			return $string;
 		}
 
-		private function ProcessParamaterType($parameter) {
-
-			$statement = new DesmondDatabaseQuery($this->conn);
-			
-			$parameter = $statement->Escape($parameter);
-
-			if(is_int($parameter)) {
-				return (int) $parameter;
-			}
-
-			else if(is_bool($parameter)) {
-				if(in_array($string, array("true", "false", "1", "0", "yes", "no"))) {
-					return (bool) $parameter;
-				}
-			}
-			else if(is_string($parameter) && $parameter != '') {
-				return "'" . $parameter . "'";
-			}
-
-			else {
-				return "null";
-			}
-		}
 
 		private function isWhereOperator($operator) {
 			$operators = array_values($this->where_operators);

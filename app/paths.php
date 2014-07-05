@@ -7,6 +7,7 @@
 		'language' => Application::path('app') . 'language/',
 		'elements' => Application::path('app') . 'elements/',
 		'plugins' => Application::path('app') . 'plugins/',
+		'tests' => Application::path('app') . 'tests/',
 	);
 
 ?>

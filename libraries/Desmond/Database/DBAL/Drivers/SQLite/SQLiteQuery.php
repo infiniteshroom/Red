@@ -7,13 +7,18 @@ Application::Import('Desmond::Database::DBAL::Exceptions::DatabaseNoQueryExcepti
 class SQLiteQuery implements IDatabaseQuery {
 	private $conn_obj = null;
 	private $result = null;
+	private $parameters = array();
 
 	public function __construct(IDatabaseConnection $conn) {
 		$this->conn_obj = $conn->GetDBConnection();
 	}
 	public function Execute($sql) {
 
-		$this->result = $this->conn_obj->query($sql);
+		$query = $this->conn_obj->prepare($sql);
+
+		$query = $this->ProcessParameters($query);
+
+		$this->result = $query->execute();
 
 		if(!$this->result) {
 			throw new DatabaseQueryException($this->conn_obj->lastErrorMsg());
@@ -97,6 +102,39 @@ class SQLiteQuery implements IDatabaseQuery {
 
 	public function Escape($input) {
 		return sqlite_escape_string($input);
+	}
+
+	public function AddParameter($param, $type) {
+		if($type == 'string') {
+			$parameters = array(
+				'value' => $param,
+				'type' => SQLITE3_TEXT,
+			);
+		}
+
+		else if($type == 'int') {
+			$parameters = array(
+				'value' => $param,
+				'type' => SQLITE3_INTEGER,
+			);
+		}
+
+		else if($type == 'float') {
+			$parameters = array(
+				'value' => $param,
+				'type' => SQLITE3_FLOAT,
+			);
+		}
+	}
+
+	private function ProcessParameters($query) {
+		$count = 1;
+		foreach($this->parameters as $key => $value) {
+			$query->bindParam($count, $value['value'], $value['type']);
+			$count++;
+		}
+
+		return $query;
 	}
 }
 ?>

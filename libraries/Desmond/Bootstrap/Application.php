@@ -39,8 +39,10 @@ class DesmondApplication {
 
 		/* if mode is cli we need to do some different things */
 		if($this->mode == 'cli') {
+
 			/* we need to include classes, but don't need controllers or error handling */
 			Application::Import('Desmond::Exceptions::*');
+
 			Application::Import('Desmond::Template::*');
 			Application::Import('Desmond::Database::DBAL::*');
 			Application::Import('Desmond::Database::DBAL::Database.php');
@@ -49,11 +51,14 @@ class DesmondApplication {
 			Application::Import('Desmond::Database::ORM::*');
 			Application::Import('Models');
 
+
 			/* let's activate the redinterpeter */
-			Application::Import('Desmond::Interpeter::*');
+			Application::Import('Desmond::Interpeter::DesmondInterpeter.php');
+
 
 			$desmond_interp = new DesmondInterpeter();
 			echo $desmond_interp->Run();
+
 
 		}
 

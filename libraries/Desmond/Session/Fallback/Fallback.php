@@ -1,6 +1,6 @@
 <?php
 Application::Import('Desmond::Session::ISession.php');
-class SessionFallback implements ISession{
+class FallbackSession implements ISession{
 	function __construct() {
 		$this->Create();
 	}

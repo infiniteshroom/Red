@@ -11,6 +11,7 @@ interface IDatabaseQuery {
 	public function FetchObject();
 	public function Count();
 	public function Escape($input);
+	public function AddParameter($param, $type);
 }
 
 ?>
