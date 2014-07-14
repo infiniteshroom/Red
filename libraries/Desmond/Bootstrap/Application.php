@@ -36,6 +36,13 @@ class DesmondApplication {
 		$this->settings['datastores'] = include($this->path['config'] . 'Datastores.php');
 		$this->settings['mail'] = include($this->path['config'] . 'Mail.php');
 		$this->settings['permissions'] = include($this->path['config'] . 'Permissions.php');
+		$this->settings['logs'] = include($this->path['config'] . 'Logs.php');
+
+
+		/* load logger */
+		Application::Import('Desmond::Logging::Logger::*');
+
+		Logger::override(new DesmondLogger());
 
 		/* if mode is cli we need to do some different things */
 		if($this->mode == 'cli') {
@@ -68,31 +75,10 @@ class DesmondApplication {
 			/* setup whoops error handling */
 
 			Application::Import('Desmond::Exceptions::*');
-			Application::Import('Whoops::Run.php');
-			Application::Import('Whoops::Handler::HandlerInterface.php');
-			Application::Import('Whoops::Handler::Handler.php');
-			Application::Import('Whoops::Handler::PrettyPageHandler.php');
-			Application::Import('Whoops::Handler::JsonResponseHandler.php');
-			Application::Import('Whoops::Exception::ErrorException.php');
-			Application::Import('Whoops::Exception::Inspector.php');
-			Application::Import('Whoops::Exception::Frame.php');
-			Application::Import('Whoops::Exception::FrameCollection.php');
+			Application::Import('PHPError::Debug::*');
 			Application::Import('Kint::Kint.class.php');
-
-			$run     = new \Whoops\Run;
-			$handler = new \Whoops\Handler\PrettyPageHandler;
-			$JsonHandler = new \Whoops\Handler\JsonResponseHandler;
-			 
-			$run->pushHandler($JsonHandler);
-			$run->pushHandler($handler);
-
-			$handler->addDataTable('Red Framework - Application', $this->settings['app']);
-			$handler->addDataTable('Red Framework - Paths', $this->path);
-			$handler->addDataTable('Red Framework - Other', array(
-				'Namespace' => $this->CurrentNamespace(),
-			));
-
-			$run->register();
+			
+			\php_error\reportErrors(array('catch_ajax_errors' => false));
 
 			/* include template engine and set twig as current engine */
 			Application::Import('Desmond::Controller::*');

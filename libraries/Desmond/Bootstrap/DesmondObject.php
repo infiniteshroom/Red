@@ -63,7 +63,12 @@
 			      }     
 			    } else throw new InvalidArgumentException("Property {$property} doesn't exist");
 			  }
+			  
+			  if(!is_object(static::$instance)) {
+			  	return null;
+			  }
 
+			//  var_dump(static::$instance,$name);
 	        return call_user_func_array(array(static::$instance,$name), array_values($arguments));
 
 

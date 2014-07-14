@@ -33,15 +33,20 @@
 				if(strpos($sql_part, "@") === 0) {
 
 					$parameter = $this->GetParameter(str_replace("@", "", $sql_part));
+
 					$this->AddParameter($parameter['value'], $parameter['type']);
+
+					//$tmp[] = $parameter['value'];
 
 					$sql = str_replace($sql_part, "?", $sql);
 				}
 			}
 
 
-
 			$this->driverobj->Execute($sql);
+
+			Logger::Write("Database executed Query: " . $sql, 'information');
+
 			$this->parameters = array();
 		}	
 
@@ -69,6 +74,7 @@
 		}
 
 		public function AddParameter($param, $type) {
+			Logger::Write("Database Added Parameter: " . $param . " type: " . $type, 'information');
 			return $this->driverobj->AddParameter($param, $type);
 		}
 

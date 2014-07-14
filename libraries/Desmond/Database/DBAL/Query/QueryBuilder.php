@@ -87,21 +87,20 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				$query_type = 'and';
 			}
 
+			/* quick fix since when updating or deleting, where's don't appear in the correct order */
+			$id = md5(uniqid());
 			$sql = $this->ProcessString($query_type, array(
 				'column' => $filter[0],
 				'operator' => $filter[1],
-				'value' => '?' 
+				'value' => '@where' . $id, 
 				));
 
 			if(is_int($filter[2])) {
-
-				//echo 'where: ' . $filter[2];
-				$this->statement->AddParameter($filter[2], 'int');
+				$this->statement->BindParameter('where' . $id,$filter[2], 'int');
 			}
 
 			else {
-				//echo 'where: ' . $filter[2];
-				$this->statement->AddParameter($filter[2], 'string');
+				$this->statement->BindParameter('where' . $id,$filter[2], 'string');
 			}
 
 			if(!$this->isWhereOperator($filter[1])) {

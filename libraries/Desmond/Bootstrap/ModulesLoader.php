@@ -35,13 +35,17 @@ class DesmondModulesLoader {
 		   if(is_dir($collection_path)) {
 			   foreach (glob($collection_path . '*.php') as $filename) 
 			   {
+
 				  include_once($filename); 
 				
 			   }
+
+			   Logger::Write("Application Import ($collectionraw): ", 'information'); 
 		   }
 		   
 		    else {
 				throw new DesmondModuleMissingException("Module Import failed - " . $collectionraw);
+				 Logger::Write("Module Import failed - $collectionraw", 'error'); 
 			 }
 	}
 	
@@ -72,23 +76,36 @@ class DesmondModulesLoader {
 				
 				
 				include_once(Application::path('controllers') . '/' . $file);
+				 Logger::Write("Application Import ($fileraw): ", 'information'); 
 			}
 			
 			else if(!class_exists(str_replace('.php', '', basename($file)))) {
 
-				var_dump(class_exists('TestController'));
-				exit;
 				throw new DesmondModuleMissingException("Module Import failed - " . $fileraw);
+				 Logger::Write("Module Import failed - $fileraw", 'error'); 
 			}
 		}
 		
+		else if($file_parts[0] == 'Plugin') {
+
+			unset($file_parts[0]);
+
+			$plugin_name = $file_parts[1];
+
+			unset($file_parts[1]);
+
+			include_once(Application::Path('plugins') . str_replace($plugin_name, $plugin_name . '/libraries/' ,str_replace("Plugin", "", $file)));
+		}
+
 		else {
 			if(file_exists(Application::path('libraries') . $file)) {
 				include_once(Application::path('libraries'). $file);
+				 Logger::Write("Application Import ($fileraw): ", 'information'); 
 			}
 			
 			else {
 				throw new DesmondModuleMissingException("Module Import failed - " . $fileraw);
+				 Logger::Write("Module Import failed - $fileraw", 'error'); 
 			}
 		}
 	}
@@ -113,6 +130,7 @@ class DesmondModulesLoader {
 		}
 		
 		if(is_dir($dir)) {
+			 Logger::Write("Application Import ($namespace): ", 'information'); 
 			 if ($handle = opendir($dir))
 			{
 				while (false !== ($dirItem = readdir($handle)))
@@ -140,6 +158,7 @@ class DesmondModulesLoader {
 		
 		else {
 			throw new DesmondModuleMissingException("Module Import failed - " . $namespaceraw);
+			 Logger::Write("Module Import failed - $namespaceraw", 'error'); 
 		}
 	}
 }

@@ -7,7 +7,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::DatabaseNoQueryExcepti
 class MySQLQuery implements IDatabaseQuery {
 	private $conn_obj = null;
 	private $query = null;
-	private $parameters = array();
+	public $parameters = array();
 
 	public function __construct(IDatabaseConnection $conn) {
 		$this->conn_obj = $conn->GetDBConnection();
@@ -15,13 +15,23 @@ class MySQLQuery implements IDatabaseQuery {
 	public function Execute($sql) {
 
 		$this->query = $this->conn_obj->prepare($sql);
+		
+		if ($this->query === false) {
+  			throw new DatabaseQueryException(mysqli_error($this->conn_obj));
+		}
+
 		$this->ProcessParameters();
 
 		
 
+
 		$this->query->execute();
 
+
+
 		$this->query->store_result();
+
+
 
 
 		if ($this->query === false) {
@@ -178,7 +188,6 @@ class MySQLQuery implements IDatabaseQuery {
 
 		$params = array();
 
-
 		foreach($this->parameters as $key => $value) {
 			if(isset($params[0])) {
 				$params[0] = $params[0] . $value['type'];
@@ -199,7 +208,14 @@ class MySQLQuery implements IDatabaseQuery {
         	$tmp[$key] = &$params[$key];
         }
 
-        call_user_func_array(array($this->query, 'bind_param'), $tmp); 
+
+        try {
+        call_user_func_array(array($this->query, 'bind_param'), $tmp);
+        }
+
+        catch(ErrorException $e) {
+        	
+        } 
 
     	}
 

@@ -24,6 +24,7 @@
 		}
 
 		public function any_test() {
+
 			//Desmonds::SetFunctionProxy('HTTPRequest', 'Form', 'Post');
 			//$name = HTTPRequest::Post('test');
 			$name = HTTPRequest::Form('test');

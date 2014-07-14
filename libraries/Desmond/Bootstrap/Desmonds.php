@@ -49,4 +49,8 @@
 	Class ModulesLoader extends DesmondObject {
 		protected static $instance;
 	}
+
+	class Logger extends DesmondObject {
+		protected static $instance;	
+	}
 ?>

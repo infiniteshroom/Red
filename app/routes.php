@@ -11,6 +11,6 @@ function isAdmin() {
 	Router::Map('home', 'HomeController');
 
 	Router::Map('/db', function() {
-		var_dump(Users::where(array('id', '=', 1))->results('one'));
+	 Kint::dump(Users::where(array('id', '=', 1))->results());
 	});
 ?>

@@ -36,21 +36,27 @@ class DesmondRouter {
 
 					if($route['method'] == 'all') {
 						$function = $route['func'];
+						Logger::Write("Route called: ANY {$route['route']}, Function", 'information'); 
 						$function();
 
 
+						
 					}
 
 					else if(strtoupper($route['method']) == DesmondRouterMethods::HTTP_GET &&  $_SERVER['REQUEST_METHOD'] == 'GET')
 					{
 						$function = $route['func'];
+						Logger::Write("Route called: GET {$route['route']}, Function", 'information'); 
 						$function();
+						
 					}
 
 					else if(strtoupper($route['method']) == DesmondRouterMethods::HTTP_POST &&  $_SERVER['REQUEST_METHOD'] == 'POST')
 					{
 						$function = $route['func'];
+						Logger::Write("Route called: POST {$route['route']}, Function", 'information');
 						$function();
+						 
 					}
 
 				}
@@ -67,6 +73,7 @@ class DesmondRouter {
 					$controller_class = $controller_parts[0];
 					$controller = new $controller_class();
 
+					Logger::Write("Route called: {$route['route']}, Controller: {$controller_class}", 'information'); 
 
 					$controller->Init();
 
@@ -85,6 +92,8 @@ class DesmondRouter {
 						$controller->ProcessActions();
 					}
 
+					
+
 					$controller->render();
 				}
 			}
@@ -95,7 +104,9 @@ class DesmondRouter {
 		if(isset($this->missing['404'])) {
 			if($this->missing['404']['type'] == 'function') {
 				$function = $this->missing['404']['func'];
+				Logger::Write("Route called: 404, attempted route: " . $route, 'information'); 
 				$function();
+
 			}
 
 			else {
@@ -105,8 +116,10 @@ class DesmondRouter {
 			HTTPrequest::Controller(str_replace('Controller', '', $this->missing['404']['controller']));
 			$controller_class = $this->missing['404']['controller'];
 			$controller = new $controller_class();
+			Logger::Write("Route called: 404, Controller: " . $controller, 'information'); 
 			$controller->Init();
 			$controller->render();
+
 			}
 		}
 	}

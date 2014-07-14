@@ -111,9 +111,11 @@ Application::import('Desmond::Controller::IController.php');
 		/* override default template */
 		public function SetView($name) {
 			$this->viewname = $name;
+			Logger::Write("Setting View for controller. View: $name", 'information'); 
+
 		}
 
-	public function ProcessActions() {
+		public function ProcessActions() {
 			$action = null;
 			if($this->request->Action() != '') {
 
@@ -164,6 +166,7 @@ Application::import('Desmond::Controller::IController.php');
 				$method_error = 'permission_error';
 				$result = $this->$method_error($action, $group);
 
+				Logger::Write("Controller action: permission_error called. Parameters: " . serialize(array($action, $group)), 'information'); 
 				$this->setActionContent($result);
 
 				return;
@@ -180,6 +183,7 @@ Application::import('Desmond::Controller::IController.php');
 					$method_error = 'permission_error';
 					$result =  $this->$method_error($action, $group);
 
+					Logger::Write("Controller action: permission_error called. Parameters: " . serialize(array($action, $group)), 'information'); 
 					$this->setActionContent($result);
 
 					return;
@@ -227,10 +231,13 @@ Application::import('Desmond::Controller::IController.php');
 			}
 
 			try {
+
+				Logger::Write("Controller action: $action called. Parameters: " . serialize($args), 'information'); 
 				$result = call_user_func_array(array( $this, $action ), $args);
 			}
 
 			catch( ErrorException $e) {
+				Logger::Write("Controller action: missing called. Parameters: " . serialize($args), 'information'); 
 				$result = call_user_func_array(array( $this, 'missing' ), $args); 
 			}
 		}
@@ -238,7 +245,7 @@ Application::import('Desmond::Controller::IController.php');
 		else {
 
 			$result = $this->$action();
-
+			Logger::Write("Controller action: $action called", 'information'); 
 
 		}
 
