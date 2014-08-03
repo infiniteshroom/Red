@@ -7,6 +7,7 @@ Application::Import('Desmond::Database::DBAL::Exceptions::DatabaseNoQueryExcepti
 class MySQLQuery implements IDatabaseQuery {
 	private $conn_obj = null;
 	private $query = null;
+	private $count = null;
 	public $parameters = array();
 
 	public function __construct(IDatabaseConnection $conn) {
@@ -14,6 +15,7 @@ class MySQLQuery implements IDatabaseQuery {
 	}
 	public function Execute($sql) {
 
+		$this->count = 0;
 		$this->query = $this->conn_obj->prepare($sql);
 		
 		if ($this->query === false) {
@@ -30,6 +32,7 @@ class MySQLQuery implements IDatabaseQuery {
 
 
 		$this->query->store_result();
+		$this->count = $this->query->num_rows;
 
 
 
@@ -37,6 +40,9 @@ class MySQLQuery implements IDatabaseQuery {
 		if ($this->query === false) {
   			throw new DatabaseQueryException(mysqli_error($this->conn_obj));
 		}
+
+		
+
 	}	
 
 	public function FetchOne() {
@@ -72,8 +78,7 @@ class MySQLQuery implements IDatabaseQuery {
 	        break;
     	}
 
-    	$this->parameters = array();
-
+	$this->parameters = array();
     	return $result;
 
 	}
@@ -109,8 +114,7 @@ class MySQLQuery implements IDatabaseQuery {
 
 	        $results[] = $row;
     	}
-
-    	$this->parameters = array();
+$this->parameters = array();
 		return $results;
 	}
 
@@ -140,16 +144,11 @@ class MySQLQuery implements IDatabaseQuery {
 	        $results[] = $object;
     	}
 
-    	$this->parameters = array();
-
+	$this->parameters = array();
 		return $results;
 	}
 	public function Count() {
-		if($this->query == null) {
-			throw new DatabaseNoQueryException();
-		}
-
-		return $this->query->num_rows;
+		return $this->count;
 	}
 
 	public function GetInsertID() {

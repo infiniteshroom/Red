@@ -29,6 +29,8 @@
 			/* parse parameters */
 			$sql_parts = explode(' ', $sql);
 
+			
+
 			foreach($sql_parts as $sql_part) {
 				if(strpos($sql_part, "@") === 0) {
 
@@ -42,6 +44,8 @@
 				}
 			}
 
+
+			
 
 			$this->driverobj->Execute($sql);
 
@@ -62,6 +66,7 @@
 			return $this->driverobj->FetchObject();
 		}
 		public function Count() {
+			//var_dump($this->driverobj->Count());
 			return $this->driverobj->Count();
 		}
 

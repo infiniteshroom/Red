@@ -13,7 +13,7 @@ class MySQLConnection implements IDatabaseConnection {
 		$username = $params['username'];
 		$password = $params['password'];
 
-		$this->conn_obj = mysqli_connect($host,$username, $password, $database);
+		$this->conn_obj = new mysqli($host,$username, $password, $database);
 
 		if (mysqli_connect_errno()) {
 			throw new DatabaseConnectionException(mysqli_connect_error());

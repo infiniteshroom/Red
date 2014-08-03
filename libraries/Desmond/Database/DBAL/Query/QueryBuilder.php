@@ -223,6 +223,8 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 
 			$this->statement = new DesmondDatabaseQuery($this->conn);
 
+			return $this;
+
 		}
 		public function count() {
 
@@ -230,7 +232,10 @@ Application::Import('Desmond::Database::DBAL::Exceptions::QueryBuilderWhereOpera
 				throw new QueryBuilderNoTableException();
 			}
 
-			$this->statement->Execute($this->sql);
+
+			if($this->statement->Count() == 0) {
+				$this->statement->Execute($this->sql);
+			}
 
 			$count = $this->statement->Count();
 

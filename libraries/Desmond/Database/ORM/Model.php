@@ -53,6 +53,7 @@ Application::Import('Valitron::Validator::Validator.php');
 
 		public function Relation($name, $full = false) {
 
+			$this->builder = Database::table($this->table);
 			/* find correct relation - this currently only applies to 1-* and *-1 relationships - now allows belongs */
 			$model_name = $this->relationships[$name]['model'];
 
@@ -74,12 +75,12 @@ Application::Import('Valitron::Validator::Validator.php');
 
 			$model_name = get_called_class();
 
+
 			$model_obj = $model_name::join(array($relation_table, $table . '.' . $relation_key, '=', $relation_table .'.'.$this->relationships[$name]['key']));
 			
 			if(!$full) {
 				$model_obj->where(array($table .'.' . $relation_key, '=', $relation_value));
 			}
-
 			return $model_obj;
 		}
 

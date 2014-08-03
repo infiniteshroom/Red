@@ -19,7 +19,6 @@
 		);
 
 		public function any_index() {
-
 			//var_dump($test->GetErrors('inputs'));
 		}
 
