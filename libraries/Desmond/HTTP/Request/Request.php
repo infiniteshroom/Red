@@ -5,6 +5,7 @@ Application::Import('Desmond::HTTP::Request::IRequest.php');
 		private $request_headers = null;
 		private $controller = null;
 		private $action = null;
+		private $router_request = null;
 
 		public function __construct() {
 
@@ -97,6 +98,16 @@ Application::Import('Desmond::HTTP::Request::IRequest.php');
 
 			else {
 				$this->action = $name;
+			}
+		}
+
+		public function RouterRequest($name = null) {
+			if($name == null) {
+				return $this->router_request;
+			}
+
+			else {
+				$this->router_request = $name;
 			}
 		}
 

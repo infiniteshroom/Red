@@ -21,6 +21,7 @@ Application::import('Desmond::Controller::IController.php');
 
 			$this->response = HTTPResponse::instance();
 
+
 			/* ajax related tasks */
 			$methods = get_class_methods($this);
 			$subscribers = array();
@@ -116,6 +117,7 @@ Application::import('Desmond::Controller::IController.php');
 		}
 
 		public function ProcessActions() {
+
 			$action = null;
 			if($this->request->Action() != '') {
 
@@ -129,6 +131,7 @@ Application::import('Desmond::Controller::IController.php');
 
 			else {
 				$action = strtolower($this->request->HttpMethod()) . '_'.$this->request->Action();
+
 				if(!method_exists($this, $action)) {
 					/* check if 'any' method */
 					$action = 'any_'.$this->request->Action();
@@ -199,23 +202,40 @@ Application::import('Desmond::Controller::IController.php');
 					
 		if($numargs > 0) {
 		/* break up pathinfo */
-		$path_args = explode('/', $_SERVER['PATH_INFO']);
-		/* remove whitespace from pathinfo */
-		foreach($path_args as $key => $value) {
-			if($path_args[$key] == '') {
-				unset($path_args[$key]);
+
+		if($this->request->RouterRequest() === null) {
+			$path_args = explode('/', $_SERVER['PATH_INFO']);
+			/* remove whitespace from pathinfo */
+			foreach($path_args as $key => $value) {
+				if($path_args[$key] == '') {
+					unset($path_args[$key]);
+				}
 			}
 		}
 
-		$path_args = array_values($path_args);
+		else {
 
-		/* remove controller and action */
+			$path_parts = str_replace($this->request->RouterRequest(), '', $_SERVER['PATH_INFO']);
 
-		if($action != 'any_index') {
-			unset($path_args[1]);
+			$path_parts = str_replace('/', ' ', $path_parts);
+			$path_parts = explode(' ', $path_parts);
+
+			unset($path_parts[0]);
+			$path_args = $path_parts;
+
 		}
 
-		unset($path_args[0]);
+		if($this->request->RouterRequest() === null) {
+			$path_args = array_values($path_args);
+
+			/* remove controller and action */
+
+			if($action != 'any_index') {
+				unset($path_args[1]);
+			}
+
+			unset($path_args[0]);
+		}	
 
 		$path_args = array_values($path_args);
 						

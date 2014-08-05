@@ -22,13 +22,14 @@ class DesmondRouter {
 			}
 
 
-			if($route['type'] != 'function') {
+			if($route['type'] != 'function' && strpos($route['route'],'/') === false) {
 				if($request != '/') {
 					$parts_request = explode('/', $_SERVER['PATH_INFO']);
 					$request = $parts_request[1];
 				}
 
 			}
+
 
 			if($route['route'] == $request || $route['route'] . '/' == $request || $route['route'] == '/' . $request 
 				|| (0 === strpos($request, $route['route']) && $route['route'] != '/') ) {
@@ -61,9 +62,10 @@ class DesmondRouter {
 
 				}
 
+
 				if($route['type'] == 'controller') {
 
-			
+					
 
 					$controller_parts = explode('::', $route['controller']);
 					Application::import('Controller::' . $controller_parts[0] . '.php');
@@ -75,8 +77,21 @@ class DesmondRouter {
 
 					Logger::Write("Route called: {$route['route']}, Controller: {$controller_class}", 'information'); 
 
+
+					if(strpos($route['route'],'/') !== false) {
+
+						$path_parts = str_replace($route['route'], '', $request);
+						$path_parts = str_replace('/', ' ', $path_parts);
+						$path_parts = explode(' ', $path_parts);
+
+						HTTPRequest::Action(trim($path_parts[0]));
+						HTTPRequest::RouterRequest($route['route']);
+					}
+
 					$controller->Init();
 
+
+					
 
 					if(isset($controller_parts[1])) {
 						$action = $controller_parts[1];
@@ -86,12 +101,13 @@ class DesmondRouter {
 						$controller->setActionContent($result);
 
 						$controller->request->Action(explode('_', $controller_parts[1])[1]);
+
+
 					}
 
 					else {
 						$controller->ProcessActions();
 					}
-
 					
 
 					$controller->render();

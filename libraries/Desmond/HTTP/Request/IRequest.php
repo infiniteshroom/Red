@@ -6,6 +6,7 @@
 		public function Files($name);
 		public function Action($name=null);
 		public function Controller($name=null);
+		public function RouterRequest($name=null);
 		public function HttpMethod();
 		public function Header($name);
 		public function isLocal();

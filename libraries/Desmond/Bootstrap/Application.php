@@ -110,9 +110,10 @@ class DesmondApplication {
 			Application::Import('Desmond::HTTP::Response::*');
 
 			/* setup the default request and response objects */
+
+			
 			HTTPRequest::override(new DesmondRequest());
 			HTTPResponse::override(new DesmondResponse());
-
 
 			Database::override(new DesmondDatabase());
 
@@ -158,6 +159,7 @@ class DesmondApplication {
 
 			/* include routes */
 			include($this->path['app'] . 'routes.php');
+
 
 			Router::Process();
 		}
