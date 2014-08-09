@@ -33,6 +33,11 @@ Application::Import('Desmond::HTTP::Response::IResponse.php');
 			/* we set content here, to avoid view being rendered. */
 			$this->SetContent("redirect");
 
+			foreach($data as $key => $value) {
+				if(is_object($value)) {
+					$data[$key] = base64_encode(serialize($data[$key]));
+				}
+			}
 			if(strstr($location, '::') === false) {
 				$this->SetHeader('Location', Application::Path('web') . $location);
 			}
@@ -41,7 +46,6 @@ Application::Import('Desmond::HTTP::Response::IResponse.php');
 			if(count($data) > 0) {
 				Session::Set('redirect_data', $data);
 			}
-
 			
 		}
 	}

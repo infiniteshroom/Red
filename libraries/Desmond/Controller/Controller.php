@@ -12,6 +12,7 @@ Application::import('Desmond::Controller::IController.php');
 		
 		public $request = null;
 		public $response = null;
+		private $redirect_data = array();
 
 		/* setup the controller */
 		public function Init() {
@@ -54,7 +55,18 @@ Application::import('Desmond::Controller::IController.php');
 
 			/* check for any redirect data */
 			if(Session::Get('redirect_data') != '') {
-				$this->variables += Session::Get('redirect_data');
+				$this->redirect_data = Session::Get('redirect_data');
+
+				foreach($this->redirect_data as $key => $value) {
+					if(!is_array($value)) {
+
+						$decode = base64_decode($value);
+						if(@unserialize($decode) !== null) {
+							$this->redirect_data[$key] = @unserialize($decode);
+						}
+					}
+				}
+
 				Session::Set('redirect_data', '');
 			}
 		}
@@ -66,6 +78,10 @@ Application::import('Desmond::Controller::IController.php');
 
 		/* returns content to the screen */
 		public function Render() {
+
+			foreach($this->redirect_data as $key => $value) {
+				$this->variables[$key] = $value;
+			}
 
 			/* render headers */
 			if(!headers_sent()) {
@@ -271,6 +287,8 @@ Application::import('Desmond::Controller::IController.php');
 
 	/* determine content type and store in response object */
 	$this->setActionContent($result);
+
+
  }	
 
  public function setActionContent($result) {

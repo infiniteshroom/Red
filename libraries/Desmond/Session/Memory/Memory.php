@@ -65,6 +65,7 @@ class MemorySession implements ISession {
 		}
 		
 	
+
 		
 			//Gen UUID. TODO: Add blowfish crypt of sessionID to store in cookie.
 			$this->session_id = md5(uniqid());
@@ -103,6 +104,7 @@ class MemorySession implements ISession {
 				}
 
 				else {
+
 					$sessions = $memory->ReadCacheData('RED_SID');	
 				}
 				
@@ -174,8 +176,9 @@ class MemorySession implements ISession {
 				
 				$sessions = $memory->ReadCacheData('RED_SID');
 				$sessions[$this->session_id] = $this->vars;
+
 				$memory->WriteCacheData('RED_SID', $sessions, strtotime("+1 year"));
-				
+
 				if($sessions != $memory->ReadCacheData('RED_SID')) {
 					throw new SessionCannotSaveSession($this->session_id);
 				}

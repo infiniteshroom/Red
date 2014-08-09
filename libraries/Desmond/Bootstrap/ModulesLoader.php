@@ -70,8 +70,9 @@ class DesmondModulesLoader {
 
 			$file = str_replace('Controller/', '', $file);
 
+			$file = str_replace('.', '/', $file);
+			$file = str_replace('/php', '.php', $file);
 
-			
 			if(file_exists(Application::path('controllers') . $file)) {
 				
 				

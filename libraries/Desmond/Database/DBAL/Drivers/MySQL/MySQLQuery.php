@@ -35,8 +35,6 @@ class MySQLQuery implements IDatabaseQuery {
 		$this->count = $this->query->num_rows;
 
 
-
-
 		if ($this->query === false) {
   			throw new DatabaseQueryException(mysqli_error($this->conn_obj));
 		}

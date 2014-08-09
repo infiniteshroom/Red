@@ -72,7 +72,19 @@ class DesmondRouter {
 
 					/* set controller var in request object */
 					HTTPrequest::Controller(str_replace('Controller', '', $controller_parts[0]));
-					$controller_class = $controller_parts[0];
+
+					/* check in case we routing from a subdir */
+					$namespace_pos = strpos($controller_parts[0], '.');
+
+					if($namespace_pos !== false) {
+						$controller_class = substr($controller_parts[0], $namespace_pos + 1);
+					}
+
+					else {
+						$controller_class = $controller_parts[0];
+					}
+
+
 					$controller = new $controller_class();
 
 					Logger::Write("Route called: {$route['route']}, Controller: {$controller_class}", 'information'); 
