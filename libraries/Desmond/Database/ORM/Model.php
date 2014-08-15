@@ -116,14 +116,14 @@ Application::Import('Valitron::Validator::Validator.php');
 			return $modelfind;
 		}
 
-		public function Create() {
+		public function Create($validate = true) {
 
 			/* process validators if they exist */
 			$v = new Validator($this->attributes);
 
 			$v->rules($this->validators);
 
-			if($v->validate()) {
+			if($v->validate() || $validate == false) {
 
 				$id = $this->builder->insert($this->attributes);
 
@@ -137,18 +137,18 @@ Application::Import('Valitron::Validator::Validator.php');
 			return $this;
 		}
 
-		public function Save() {
+		public function Save($validate = true) {
 
 			/* process validators if they exist */
 			$v = new Validator($this->attributes);
 
 			$v->rules($this->validators);
 
-			if($v->validate()) {
+			if($v->validate() || $validate == false) {
 
 				/* if no id set, then the user actually wants a create not a save */
 				if($this->id == "") {
-					$this->Create();
+					$this->Create($validate);
 					return $this;
 				}
 
@@ -178,7 +178,14 @@ Application::Import('Valitron::Validator::Validator.php');
 		}
 
 		public function Delete() {
-			$this->builder->where(array($this->key, '=', $this->attributes[$this->key]));
+			
+			if(isset($this->attributes[$this->key])) {
+				if($this->attributes[$this->key] != null) {
+					$this->builder->where(array($this->key, '=', $this->attributes[$this->key]));
+				}
+			}
+
+
 			$this->builder->delete();
 		}
 
@@ -461,3 +468,4 @@ Application::Import('Valitron::Validator::Validator.php');
 
 	}
 ?>
+
