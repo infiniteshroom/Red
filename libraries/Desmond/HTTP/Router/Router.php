@@ -39,6 +39,7 @@ class DesmondRouter {
 						$function = $route['func'];
 						Logger::Write("Route called: ANY {$route['route']}, Function", 'information'); 
 						$function();
+						return 1;
 
 
 						
@@ -49,6 +50,7 @@ class DesmondRouter {
 						$function = $route['func'];
 						Logger::Write("Route called: GET {$route['route']}, Function", 'information'); 
 						$function();
+						return 1;
 						
 					}
 
@@ -57,6 +59,7 @@ class DesmondRouter {
 						$function = $route['func'];
 						Logger::Write("Route called: POST {$route['route']}, Function", 'information');
 						$function();
+						return 1;
 						 
 					}
 
@@ -123,6 +126,8 @@ class DesmondRouter {
 					
 
 					$controller->render();
+					return 1;
+
 				}
 			}
 		}

@@ -49,6 +49,7 @@ Application::Import('Desmond::HTTP::Request::IRequest.php');
 					$this->action = $path_parts[1];
 				}
 			}
+
 		}
 
 		public function Cookie($name) {
@@ -92,7 +93,7 @@ Application::Import('Desmond::HTTP::Request::IRequest.php');
 		}
 
 		public function Action($name = null) {
-			if($name == null) {
+			if($name === null) {
 				return $this->action;
 			}
 

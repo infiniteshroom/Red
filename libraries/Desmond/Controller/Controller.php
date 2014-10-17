@@ -134,8 +134,9 @@ Application::import('Desmond::Controller::IController.php');
 
 		public function ProcessActions() {
 
+
 			$action = null;
-			if($this->request->Action() != '') {
+			if($this->request->Action() != null) {
 
 			if(!$this->restful) {
 				$action = $this->request->Action() . '_action';
@@ -151,14 +152,22 @@ Application::import('Desmond::Controller::IController.php');
 				if(!method_exists($this, $action)) {
 					/* check if 'any' method */
 					$action = 'any_'.$this->request->Action();
-					if(!method_exists($this, $action)) {
-							$action = 'any_index';
+					if(method_exists($this, 'missing') && !method_exists($this, $action)) {
+
+						Logger::Write("Controller action: missing called.",'information'); 
+						$result = call_user_func_array(array( $this, 'missing' ), array()); 
+					}
+
+		
+
+					else if(!method_exists($this, 'missing') && !method_exists($this, $action) && $this->request->Action() != null) {
+					    throw new DesmondActionMissing($this->request->Controller(),$this->request->Action());
 					}
 				}
 			}
 		}
-
-		if($action == null) {
+	
+		if($this->request->Action() == null) {
 
 			if($this->restful) {
 				$action = 'any_index';
@@ -266,22 +275,39 @@ Application::import('Desmond::Controller::IController.php');
 				}
 			}
 
-			try {
+			if( method_exists($this, $action)) {
 
 				Logger::Write("Controller action: $action called. Parameters: " . serialize($args), 'information'); 
 				$result = call_user_func_array(array( $this, $action ), $args);
 			}
 
-			catch( ErrorException $e) {
+			else if(method_exists($this, 'missing')) {
 				Logger::Write("Controller action: missing called. Parameters: " . serialize($args), 'information'); 
 				$result = call_user_func_array(array( $this, 'missing' ), $args); 
+			}
+
+			else {
+			    throw new DesmondActionMissing($this->request->Controller(),$this->request->Action());
 			}
 		}
 		
 		else {
+			
+			if( method_exists($this, $action)) {
+				$result = $this->$action();
+				Logger::Write("Controller action: $action called", 'information'); 
+			}
 
-			$result = $this->$action();
-			Logger::Write("Controller action: $action called", 'information'); 
+			else if(method_exists($this, 'missing')) {
+
+				Logger::Write("Controller action: missing called.",'information'); 
+				$result = call_user_func_array(array( $this, 'missing' ), array()); 
+			}
+
+			else {
+			    throw new DesmondActionMissing($this->request->Controller(),$this->request->Action());
+			}
+
 
 		}
 

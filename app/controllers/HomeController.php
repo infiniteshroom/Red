@@ -21,6 +21,10 @@
 		public function any_index() {
 			//var_dump($test->GetErrors('inputs'));
 		}
+		
+		public function any_more($id) {
+			return $id;		
+		}
 
 		public function any_test() {
 
