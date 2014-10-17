@@ -18,5 +18,4 @@ ModulesLoader::override(new DesmondModulesLoader());
 Application::override(new DesmondApplication());
 
 Application::Start();
-
 ?>

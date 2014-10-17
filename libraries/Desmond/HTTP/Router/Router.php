@@ -150,6 +150,10 @@ class DesmondRouter {
 
 			}
 		}
+
+		else {
+			throw new DesmondRouteNotFound($request);		
+		}
 	}
 
 	public function Route($route) {
